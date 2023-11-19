@@ -18,12 +18,14 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 public class SanPhamService {
 
     public SanPham findById(int maSanPham) {
         String sql = "SELECT * FROM SANPHAM WHERE MASANPHAM = " + maSanPham;
-        System.out.println(sql);
+//        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);
@@ -39,6 +41,7 @@ public class SanPhamService {
         return null;
     }
 
+    
     public List<SanPham> selectAll() {
         List<SanPham> listSanPham = new ArrayList<>();
         String sql = "SELECT * FROM SANPHAM";
@@ -55,6 +58,24 @@ public class SanPhamService {
         }
         return listSanPham;
     }
+    
+    public List<SanPham> selectAllFromAToB(int a, int b) {
+        List<SanPham> listSanPham = new ArrayList<>();
+        String sql = String.format("SELECT * FROM SANPHAM ORDER BY SanPham.maSanPham OFFSET %s ROWS FETCH NEXT %s ROWS ONLY", a, b);
+        try {
+            Statement st = new DBContext().getConnect().createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                int maSp = rs.getInt("MASANPHAM");
+                String tenSp = rs.getString("TENSANPHAM");
+                listSanPham.add(new SanPham(maSp, tenSp));
+            }
+        } catch (Exception e) {
+            System.out.println("SANPHAM SERVICE ERROR SELECT ALL:" + e);
+        }
+        return listSanPham;
+    }
+    
 
     public String add(String tenSanPham) {
         Connection con = new DBContext().getConnect();

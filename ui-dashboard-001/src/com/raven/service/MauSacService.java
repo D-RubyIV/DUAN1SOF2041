@@ -22,7 +22,7 @@ public class MauSacService {
 
     public MauSac findById(int maMauSac) {
         String sql = "SELECT * FROM MAUSAC WHERE MAMAUSAC = " + maMauSac;
-        System.out.println(sql);
+//        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);

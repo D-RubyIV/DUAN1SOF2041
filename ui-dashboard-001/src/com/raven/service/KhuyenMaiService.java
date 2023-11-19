@@ -22,7 +22,7 @@ public class KhuyenMaiService {
 
     public KhuyenMai findById(String maKhuyenMai) {
         String sql = "SELECT * FROM KHUYENMAI WHERE MAKHUYENMAI LIKE '" + maKhuyenMai + "'";
-        System.out.println(sql);
+//        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);

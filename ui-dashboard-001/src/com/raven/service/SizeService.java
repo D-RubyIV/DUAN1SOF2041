@@ -22,7 +22,7 @@ public class SizeService {
 
     public Size findById(int maSize) {
         String sql = "SELECT * FROM SIZE WHERE MASIZE = " + maSize;
-        System.out.println(sql);
+//        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);

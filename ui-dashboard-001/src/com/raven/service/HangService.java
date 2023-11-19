@@ -21,7 +21,7 @@ public class HangService {
 
     public Hang findById(int maHang) {
         String sql = "SELECT * FROM HANG WHERE MAHANG = " + maHang;
-        System.out.println(sql);
+//        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);

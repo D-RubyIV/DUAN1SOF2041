@@ -23,7 +23,7 @@ public class ChatLieuService {
 
     public ChatLieu findById(int maChatLieu) {
         String sql = "SELECT * FROM CHATLIEU WHERE MACHATLIEU = " + maChatLieu;
-        System.out.println(sql);
+//        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);
