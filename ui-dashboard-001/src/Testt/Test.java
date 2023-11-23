@@ -9,25 +9,36 @@ import com.ravent.database.DBContext;
 import com.ravent.entity.SanPham;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import java.text.Normalizer;
+import java.util.regex.Pattern;
 /**
  *
  * @author phamh
  */
 public class Test {
     public static void main(String[] args) {
-        String a = "Hãng Sản Phẩm";
-        String result = removeAccent(a);
-        System.out.println(result);
+
+        // Tạo một đối tượng DecimalFormat với mẫu số lẻ và chỉ định làm tròn lên 2 chữ số thập phân
+        double number1 = 1.1;
+        double number2 = 1.9;
+
+        // Làm tròn lên
+        int roundedNumber1 = (int) Math.ceil(number1);
+        int roundedNumber2 = (int) Math.ceil(number2);
+
+        // In kết quả
+        System.out.println("Sau khi làm tròn " + number1 + ": " + roundedNumber1);
+        System.out.println("Sau khi làm tròn " + number2 + ": " + roundedNumber2);
     }
 
-    public static String removeAccent(String input) {
-        String normalized = java.text.Normalizer.normalize(input, java.text.Normalizer.Form.NFD);
-        normalized = normalized.replaceAll("[^\\p{ASCII}]", "");
-        return normalized.toLowerCase();
+     public static String removeDiacritics(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(normalized).replaceAll("").toLowerCase();
     }
 }

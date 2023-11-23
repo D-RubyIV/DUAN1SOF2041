@@ -55,7 +55,7 @@ public class Pagination extends JPanel {
         }
     }
 
-    private void changePage(int current, int totalPage) {
+    public void changePage(int current, int totalPage) {
         page = paginate(current, totalPage);
         removeAll();
         refresh();

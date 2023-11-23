@@ -37,7 +37,7 @@ public class Main extends javax.swing.JFrame {
         form2 = new Form_2();
         form3 = new Form_3();
         Form_4 form4 = new Form_4();
-        Form_5 form5 = new Form_5();
+        Form_5 form5 = new Form_5();       
         menu.initMoving(Main.this);
         menu.addEventMenuSelected(new EventMenuSelected() {
             @Override

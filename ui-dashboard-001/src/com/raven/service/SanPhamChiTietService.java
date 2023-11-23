@@ -19,6 +19,33 @@ import java.util.Date;
 import java.util.List;
 
 public class SanPhamChiTietService {
+    
+    
+    public List<SanPhamChiTiet> selectAllByCustomSql(String sql) {
+        List<SanPhamChiTiet> listSpChiTiet = new ArrayList<>();
+        System.out.println(sql);
+        try {
+            Statement st = new DBContext().getConnect().createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                int maSpChiTiet = rs.getInt("MASANPHAMCHITIET");
+                int maSanPham = rs.getInt("MASANPHAM");
+                int maHang = rs.getInt("MAHANG");
+                int maMauSac = rs.getInt("MAMAUSAC");
+                int maSize = rs.getInt("MASIZE");
+                int maChatLieu = rs.getInt("MACHATLIEU");
+                int soLuong = rs.getInt("SOLUONG");
+                float giaSanPham = rs.getFloat("GIASANPHAM");
+                String mota = rs.getString("MOTA");
+                String hinhAnh = rs.getString("HINHANH");
+
+                listSpChiTiet.add(new SanPhamChiTiet(maSpChiTiet, maSanPham, maHang, maMauSac, maSize, maChatLieu, soLuong, giaSanPham, mota, hinhAnh));
+            }
+        } catch (Exception e) {
+            System.out.println("SANPHAMCHITIET SERVICE ERROR SELECT ALL:" + e);
+        }
+        return listSpChiTiet;
+    }
 
     public int getTotalSanPhamChiTiet(int maSanPham) {
         String sql = String.format("SELECT SUM(soLuong) AS SOLUONG FROM SanPhamChiTiet WHERE maSanPham = %s", maSanPham);
@@ -133,7 +160,6 @@ public class SanPhamChiTietService {
                 float giaSanPham = rs.getFloat("GIASANPHAM");
                 String mota = rs.getString("MOTA");
                 String hinhAnh = rs.getString("HINHANH");
-
                 listSpChiTiet.add(new SanPhamChiTiet(maSpChiTiet, maSanPham, maHang, maMauSac, maSize, maChatLieu, soLuong, giaSanPham, mota, hinhAnh));
             }
         } catch (Exception e) {
