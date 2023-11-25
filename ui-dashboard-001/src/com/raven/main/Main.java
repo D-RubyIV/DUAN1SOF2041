@@ -12,6 +12,9 @@ import com.raven.form.Form_3;
 import com.raven.form.Form_4;
 import com.raven.form.Form_5;
 import com.raven.form.Form_Home;
+import com.raven.service.NguoiDungService;
+import com.raven.utils.Auth;
+import com.ravent.entity.NguoiDung;
 import java.awt.Color;
 import javax.swing.JComponent;
 
@@ -30,6 +33,11 @@ public class Main extends javax.swing.JFrame {
     private Form_3 form3;
 
     public Main() {
+        // Fake Login
+        NguoiDungService nguoiDungService = new NguoiDungService();
+        NguoiDung nguoiDung = nguoiDungService.findById(1);
+        Auth.user = nguoiDung;
+
         initComponents();
         setBackground(new Color(0, 0, 0, 0));
         home = new Form_Home();
@@ -37,7 +45,7 @@ public class Main extends javax.swing.JFrame {
         form2 = new Form_2();
         form3 = new Form_3();
         Form_4 form4 = new Form_4();
-        Form_5 form5 = new Form_5();       
+        Form_5 form5 = new Form_5();
         menu.initMoving(Main.this);
         menu.addEventMenuSelected(new EventMenuSelected() {
             @Override
@@ -59,6 +67,7 @@ public class Main extends javax.swing.JFrame {
         });
         //  set when system open start with home form
         setForm(new Form_Home());
+
     }
 
     private void setForm(JComponent com) {
@@ -95,11 +104,11 @@ public class Main extends javax.swing.JFrame {
         panelBorder1Layout.setHorizontalGroup(
             panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(panelBorder1Layout.createSequentialGroup()
-                .addComponent(menu, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(menu, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(headerClose1, javax.swing.GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)
-                    .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 922, Short.MAX_VALUE)))
+                    .addComponent(headerClose1, javax.swing.GroupLayout.DEFAULT_SIZE, 928, Short.MAX_VALUE)
+                    .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
         panelBorder1Layout.setVerticalGroup(
             panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)

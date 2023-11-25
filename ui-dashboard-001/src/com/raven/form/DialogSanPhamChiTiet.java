@@ -160,7 +160,6 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
         }
         if (!searchText.isEmpty()) {
             // By Search
-
             String textSearch = txtTimKiem.getText().toLowerCase();
             System.out.println("Search Text: " + textSearch);
             String baseSql = "SELECT * FROM [SanPhamChiTiet] "
@@ -331,7 +330,13 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
     }
 
     public SanPhamChiTiet getObjSanPhamChiTiet() {
-        int maSanPhamChiTiet = Integer.parseInt(tblBangSanPhamChiTiet.getValueAt(INDEX_SELECT_ROW_BANG_SAN_PHAM_CHI_TIET, 1).toString());
+        int maSanPhamChiTiet = 0;
+        try {
+            maSanPhamChiTiet = Integer.parseInt(tblBangSanPhamChiTiet.getValueAt(INDEX_SELECT_ROW_BANG_SAN_PHAM_CHI_TIET, 1).toString());
+        } catch (Exception e) {
+            maSanPhamChiTiet = 0;
+        }
+        
         int maSanPham = ((SanPham) cboSanPham.getSelectedItem()).getMaSanPham();
         int maHang = ((Hang) cboHang.getSelectedItem()).getMaHang();
         int maMauSac = ((MauSac) cboMauSac.getSelectedItem()).getMaMauSac();
@@ -565,7 +570,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(txtTimKiem)
-                .addGap(92, 92, 92))
+                .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -837,8 +842,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(lbImage, javax.swing.GroupLayout.PREFERRED_SIZE, 127, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lbImage, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addComponent(jLabel8, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)

@@ -19,11 +19,10 @@ import java.util.Date;
 import java.util.List;
 
 public class SanPhamChiTietService {
-    
-    
+
     public List<SanPhamChiTiet> selectAllByCustomSql(String sql) {
         List<SanPhamChiTiet> listSpChiTiet = new ArrayList<>();
-        System.out.println(sql);
+//        System.out.println("CUSTOM SQL :" + sql);
         try {
             Statement st = new DBContext().getConnect().createStatement();
             ResultSet rs = st.executeQuery(sql);
@@ -65,7 +64,6 @@ public class SanPhamChiTietService {
 
     public SanPhamChiTiet findById(int maSanPhamChiTiet) {
         String sql = "SELECT * FROM SANPHAMCHITIET WHERE MASANPHAMCHITIET = " + maSanPhamChiTiet;
-        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);

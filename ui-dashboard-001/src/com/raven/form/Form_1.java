@@ -22,6 +22,8 @@ import com.ravent.entity.SanPham;
 import com.ravent.entity.SanPhamChiTiet;
 import com.ravent.entity.Size;
 import java.awt.Image;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,7 +63,6 @@ public class Form_1 extends javax.swing.JPanel {
             }
         });
         init_LoadSanPhamChiTietToTabble();
-
     }
 
     public void init_LoadSanPhamChiTietToTabble() {
@@ -81,6 +82,13 @@ public class Form_1 extends javax.swing.JPanel {
         int maSanPham = Integer.valueOf(tblBangSanPham.getValueAt(INDEX_SELECTED_TBL_SANPHAM, 0).toString());
         DialogSanPhamChiTiet dialogSanPhamChiTiet = new DialogSanPhamChiTiet(new javax.swing.JFrame(), true, maSanPham);
         dialogSanPhamChiTiet.setVisible(true);
+        dialogSanPhamChiTiet.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                System.out.println("Dialog đã đóng");
+                init_LoadSanPhamChiTietToTabble();
+            }
+        });
     }
 
     public void fillSanPhamToForm() {
@@ -323,7 +331,7 @@ public class Form_1 extends javax.swing.JPanel {
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(59, 59, 59)
+                .addGap(56, 56, 56)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnThemSanPham)
                     .addComponent(jButton2)
@@ -343,7 +351,7 @@ public class Form_1 extends javax.swing.JPanel {
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Quản lý sản phẩm", jPanel5);

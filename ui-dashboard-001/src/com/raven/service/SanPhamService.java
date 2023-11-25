@@ -25,7 +25,6 @@ public class SanPhamService {
 
     public SanPham findById(int maSanPham) {
         String sql = "SELECT * FROM SANPHAM WHERE MASANPHAM = " + maSanPham;
-//        System.out.println(sql);
         try {
             Statement statement = new DBContext().getConnect().createStatement();
             ResultSet rs = statement.executeQuery(sql);
