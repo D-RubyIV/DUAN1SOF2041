@@ -5,9 +5,9 @@
 package com.raven.service;
 
 import java.sql.*;
-import com.ravent.database.DBContext;
-import com.ravent.entity.ChatLieu;
-import com.ravent.entity.KhuyenMai;
+import com.raven.database.DBContext;
+import com.raven.entity.ChatLieu;
+import com.raven.entity.KhuyenMai;
 import java.util.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

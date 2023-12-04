@@ -7,11 +7,12 @@ package com.raven.form;
 import com.raven.service.HoaDonService;
 import com.raven.service.NguoiDungService;
 import com.raven.utils.Auth;
-import com.ravent.entity.HoaDon;
-import com.ravent.entity.NguoiDung;
+import com.raven.entity.HoaDon;
+import com.raven.entity.NguoiDung;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Date;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -33,12 +34,28 @@ public class DialogSelectKhachHang extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         loadDataKhachHangToTbl();
     }
-    public void taoHoaDonMoiTab1(){
+
+    public void taoHoaDonMoiTab1() {
         NguoiDung nguoiDung = listNguoiDung.get(tblKhachHang.getSelectedRow());
-        HoaDon hoaDon = new HoaDon(0, new Auth().user.getMaNguoiDung(), nguoiDung.getMaNguoiDung(), null, new Date(), new Date(), 0, 0, 0, 2);
+        HoaDon hoaDon = new HoaDon(0, new Auth().user.getMaNguoiDung(), nguoiDung.getMaNguoiDung(), null, new Date(), new Date(), 0, 0, 0, 1);
         System.out.println(hoaDon);
         String message = hoaDonService.add(hoaDon);
         System.out.println("STATUS THEM HOA DON: " + message);
+        this.dispose();
+    }
+
+    public void taoHoaDonMoiTab2() {
+        String tenNguoiDung = txtTenKhachHang.getText();
+        String soDienThoai = txtTenSoDienThoai.getText();
+        String email = txtEmail.getText();
+        if (tenNguoiDung.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên người dùng");
+        } else {
+            NguoiDung nguoiDung = new NguoiDung(0, 3, tenNguoiDung, soDienThoai, email, null, null);
+            JOptionPane.showMessageDialog(this, nguoiDungService.add(nguoiDung));
+            jTabbedPane1.setSelectedIndex(0);
+        }
+
     }
 
     private void loadDataKhachHangToTbl() {
@@ -55,7 +72,7 @@ public class DialogSelectKhachHang extends javax.swing.JDialog {
                     + "OR MANGUOIDUNG LIKE N'%" + searchText + "%' "
                     + "OR SODIENTHOAI LIKE N'%" + searchText + "%' "
                     + "OR EMAIL LIKE N'%" + searchText + "%' ) "
-                    + "AND MAVAITRO LIKE = 3";
+                    + "AND MAVAITRO = 3";
             System.out.println(sql);
             listNguoiDung = nguoiDungService.selectAllByCustomSql(sql);
         }
@@ -82,6 +99,13 @@ public class DialogSelectKhachHang extends javax.swing.JDialog {
         tblKhachHang = new javax.swing.JTable();
         jButton1 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txtTenKhachHang = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
+        txtTenSoDienThoai = new javax.swing.JTextField();
+        btnXacNhan = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -148,20 +172,64 @@ public class DialogSelectKhachHang extends javax.swing.JDialog {
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jButton1)
-                .addContainerGap(45, Short.MAX_VALUE))
+                .addContainerGap(47, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Danh Sách Khách Hàng", jPanel2);
+
+        jLabel1.setText("Tên khách hàng");
+
+        jLabel2.setText("Số điện thoại");
+
+        jLabel3.setText("Email");
+
+        btnXacNhan.setText("Xác nhận");
+        btnXacNhan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXacNhanActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
         jPanel3.setLayout(jPanel3Layout);
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 659, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtTenSoDienThoai, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtTenKhachHang, javax.swing.GroupLayout.PREFERRED_SIZE, 483, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnXacNhan, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 309, Short.MAX_VALUE)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtTenKhachHang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(txtTenSoDienThoai, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(36, 36, 36)
+                .addComponent(btnXacNhan)
+                .addContainerGap(113, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Thêm Khách Hàng Mới", jPanel3);
@@ -178,8 +246,8 @@ public class DialogSelectKhachHang extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 344, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(9, Short.MAX_VALUE))
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -193,9 +261,15 @@ public class DialogSelectKhachHang extends javax.swing.JDialog {
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         taoHoaDonMoiTab1();
-        this.dispose();
         
+
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnXacNhanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXacNhanActionPerformed
+        // TODO add your handling code here:
+        taoHoaDonMoiTab2();
+        
+    }//GEN-LAST:event_btnXacNhanActionPerformed
 
     /**
      * @param args the command line arguments
@@ -240,13 +314,20 @@ public class DialogSelectKhachHang extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnXacNhan;
     private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable tblKhachHang;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtTenKhachHang;
+    private javax.swing.JTextField txtTenSoDienThoai;
     private javax.swing.JTextField txtTimKiem;
     // End of variables declaration//GEN-END:variables
 }

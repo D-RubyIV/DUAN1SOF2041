@@ -10,12 +10,12 @@ import com.raven.service.MauSacService;
 import com.raven.service.SanPhamChiTietService;
 import com.raven.service.SanPhamService;
 import com.raven.service.SizeService;
-import com.ravent.entity.ChatLieu;
-import com.ravent.entity.Hang;
-import com.ravent.entity.MauSac;
-import com.ravent.entity.SanPham;
-import com.ravent.entity.SanPhamChiTiet;
-import com.ravent.entity.Size;
+import com.raven.entity.ChatLieu;
+import com.raven.entity.Hang;
+import com.raven.entity.MauSac;
+import com.raven.entity.SanPham;
+import com.raven.entity.SanPhamChiTiet;
+import com.raven.entity.Size;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -238,14 +238,14 @@ public class DialogThuocTinhSanPham extends javax.swing.JDialog {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(46, 46, 46)
+                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane3)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 88, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtTenThuocTinh, javax.swing.GroupLayout.PREFERRED_SIZE, 331, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
+                        .addComponent(txtTenThuocTinh, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnAddThuocTinh)
                             .addComponent(btnDelete))
@@ -253,7 +253,7 @@ public class DialogThuocTinhSanPham extends javax.swing.JDialog {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnEdit)
                             .addComponent(btnClear))))
-                .addContainerGap(33, Short.MAX_VALUE))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAddThuocTinh, btnClear, btnDelete, btnEdit});
@@ -261,7 +261,7 @@ public class DialogThuocTinhSanPham extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(44, 44, 44)
+                .addGap(23, 23, 23)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtTenThuocTinh, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6)
@@ -272,8 +272,8 @@ public class DialogThuocTinhSanPham extends javax.swing.JDialog {
                     .addComponent(btnDelete)
                     .addComponent(btnClear))
                 .addGap(22, 22, 22)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(42, Short.MAX_VALUE))
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 245, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(21, Short.MAX_VALUE))
         );
 
         pack();

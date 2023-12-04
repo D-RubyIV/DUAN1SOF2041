@@ -1,10 +1,10 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package com.raven.main;
 
+import com.raven.entity.NguoiDung;
 import com.raven.event.EventMenuSelected;
 import com.raven.form.Form_1;
 import com.raven.form.Form_2;
@@ -12,20 +12,22 @@ import com.raven.form.Form_3;
 import com.raven.form.Form_4;
 import com.raven.form.Form_5;
 import com.raven.form.Form_Home;
+import com.raven.scroll.ScrollBarWin11UI;
 import com.raven.service.NguoiDungService;
 import com.raven.utils.Auth;
-import com.ravent.entity.NguoiDung;
 import java.awt.Color;
 import javax.swing.JComponent;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 
 /**
  *
- * @author RAVEN
+ * @author phamh
  */
 public class Main extends javax.swing.JFrame {
 
     /**
-     * Creates new form Main
+     * Creates new form NewJFrame1
      */
     private Form_Home home;
     private Form_1 form1;
@@ -33,41 +35,43 @@ public class Main extends javax.swing.JFrame {
     private Form_3 form3;
 
     public Main() {
+        this.setUndecorated(true);
+        initComponents();
+        setLocationRelativeTo(null);
+        
+        UIDefaults ui = UIManager.getDefaults();
+        ui.put("ScrollBarUI", ScrollBarWin11UI.class.getCanonicalName());
+
         // Fake Login
         NguoiDungService nguoiDungService = new NguoiDungService();
         NguoiDung nguoiDung = nguoiDungService.findById(1);
         Auth.user = nguoiDung;
 
-        initComponents();
+        
+        
         setBackground(new Color(0, 0, 0, 0));
-        home = new Form_Home();
-        form1 = new Form_1();
-        form2 = new Form_2();
-        form3 = new Form_3();
-        Form_4 form4 = new Form_4();
-        Form_5 form5 = new Form_5();
         menu.initMoving(Main.this);
         menu.addEventMenuSelected(new EventMenuSelected() {
             @Override
             public void selected(int index) {
                 if (index == 0) {
-                    setForm(home);
+                    setForm(new Form_5());
                 } else if (index == 1) {
-                    setForm(form1);
+                    setForm(new Form_Home());
                 } else if (index == 2) {
-                    setForm(form2);
+                    setForm(new Form_1());
                 } else if (index == 3) {
-                    setForm(form3);
+                    setForm(new Form_2());
                 } else if (index == 4) {
-                    setForm(form4);
+                    setForm(new Form_3());
                 } else if (index == 5) {
-                    setForm(form5);
+                    setForm(new Form_4());
                 }
             }
         });
+
         //  set when system open start with home form
         setForm(new Form_Home());
-
     }
 
     private void setForm(JComponent com) {
@@ -92,7 +96,6 @@ public class Main extends javax.swing.JFrame {
         headerClose1 = new com.raven.component.HeaderClose();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setUndecorated(true);
 
         panelBorder1.setBackground(new java.awt.Color(242, 242, 242));
 
@@ -107,12 +110,14 @@ public class Main extends javax.swing.JFrame {
                 .addComponent(menu, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(headerClose1, javax.swing.GroupLayout.DEFAULT_SIZE, 928, Short.MAX_VALUE)
-                    .addComponent(mainPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(headerClose1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(panelBorder1Layout.createSequentialGroup()
+                        .addComponent(mainPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 1009, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         panelBorder1Layout.setVerticalGroup(
             panelBorder1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, 558, Short.MAX_VALUE)
+            .addComponent(menu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(panelBorder1Layout.createSequentialGroup()
                 .addComponent(headerClose1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -128,11 +133,12 @@ public class Main extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(panelBorder1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(panelBorder1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 7, Short.MAX_VALUE))
         );
 
         pack();
-        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     /**
@@ -160,6 +166,7 @@ public class Main extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */

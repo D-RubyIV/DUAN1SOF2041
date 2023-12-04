@@ -8,8 +8,8 @@ package com.raven.service;
  *
  * @author phamh
  */
-import com.ravent.database.DBContext;
-import com.ravent.entity.KhuyenMai;
+import com.raven.database.DBContext;
+import com.raven.entity.KhuyenMai;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,6 +46,27 @@ public class KhuyenMaiService {
     public List<KhuyenMai> selectAll() {
         List<KhuyenMai> listKhuyenMai = new ArrayList<>();
         String sql = "SELECT * FROM KHUYENMAI";
+        try {
+            Statement st = new DBContext().getConnect().createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                String maKm = rs.getString("MAKHUYENMAI");
+                String tenKm = rs.getString("TENKHUYENMAI");
+                float menhGia = rs.getFloat("MENHGIA");
+                int soLuong = rs.getInt("SOLUONGMA");
+                Date ngayTao = rs.getDate("NGAYTAO");
+                Date ngayBatDau = rs.getDate("NGAYBATDAU");
+                Date ngayKetThuc = rs.getDate("NGAYKETTHUC");
+                listKhuyenMai.add(new KhuyenMai(maKm, tenKm, menhGia, soLuong, ngayTao, ngayBatDau, ngayKetThuc));
+            }
+        } catch (Exception e) {
+            System.out.println("KHUYENMAI SERVICE ERROR SELECT ALL:" + e);
+        }
+        return listKhuyenMai;
+    }
+    
+    public List<KhuyenMai> selectAllByCustomSql(String sql) {
+        List<KhuyenMai> listKhuyenMai = new ArrayList<>();
         try {
             Statement st = new DBContext().getConnect().createStatement();
             ResultSet rs = st.executeQuery(sql);

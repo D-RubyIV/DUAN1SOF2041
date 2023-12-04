@@ -9,8 +9,8 @@ package com.raven.service;
  * @author phamh
  */
 
-import com.ravent.database.DBContext;
-import com.ravent.entity.Size;
+import com.raven.database.DBContext;
+import com.raven.entity.Size;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

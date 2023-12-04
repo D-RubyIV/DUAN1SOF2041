@@ -4,8 +4,8 @@
  */
 package com.raven.service;
 
-import com.ravent.database.DBContext;
-import com.ravent.entity.NguoiDung;
+import com.raven.database.DBContext;
+import com.raven.entity.NguoiDung;
 import com.sun.org.apache.bcel.internal.generic.AALOAD;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +29,7 @@ public class NguoiDungService {
                 int maNd = rs.getInt("MANGUOIDUNG");
                 int maVt = rs.getInt("MAVAITRO");
                 String tenNd = rs.getString("TENNGUOIDUNG");
-                int soDt = rs.getInt("SODIENTHOAI");
+                String soDt = rs.getString("SODIENTHOAI");
                 String email = rs.getString("EMAIL");
                 String tenTk = rs.getString("TENTAIKHOAN");
                 String matKhau = rs.getString("MATKHAU");
@@ -53,7 +53,7 @@ public class NguoiDungService {
                 int maNd = rs.getInt("MANGUOIDUNG");
                 int maVt = rs.getInt("MAVAITRO");
                 String tenNd = rs.getString("TENNGUOIDUNG");
-                int soDt = rs.getInt("SODIENTHOAI");
+                String soDt = rs.getString("SODIENTHOAI");
                 String email = rs.getString("EMAIL");
                 String tenTk = rs.getString("TENTAIKHOAN");
                 String matKhau = rs.getString("MATKHAU");
@@ -75,7 +75,7 @@ public class NguoiDungService {
                 int maNd = rs.getInt("MANGUOIDUNG");
                 int maVt = rs.getInt("MAVAITRO");
                 String tenNd = rs.getString("TENNGUOIDUNG");
-                int soDt = rs.getInt("SODIENTHOAI");
+                String soDt = rs.getString("SODIENTHOAI");
                 String email = rs.getString("EMAIL");
                 String tenTk = rs.getString("TENTAIKHOAN");
                 String matKhau = rs.getString("MATKHAU");
@@ -98,7 +98,7 @@ public class NguoiDungService {
                 int maNd = rs.getInt("MANGUOIDUNG");
                 int maVt = rs.getInt("MAVAITRO");
                 String tenNd = rs.getString("TENNGUOIDUNG");
-                int soDt = rs.getInt("SODIENTHOAI");
+                String soDt = rs.getString("SODIENTHOAI");
                 String email = rs.getString("EMAIL");
                 String tenTk = rs.getString("TENTAIKHOAN");
                 String matKhau = rs.getString("MATKHAU");
@@ -118,7 +118,7 @@ public class NguoiDungService {
             PreparedStatement st = con.prepareStatement(sql);
             st.setInt(1, nguoiDung.getMaVaiTro());
             st.setString(2, nguoiDung.getTenNguoiDung());
-            st.setInt(3, nguoiDung.getSoDienThoai());
+            st.setString(3, nguoiDung.getSoDienThoai());
             st.setString(4, nguoiDung.getEmail());
             st.setString(5, nguoiDung.getTenTaiKhoan());
             st.setString(6, nguoiDung.getMatKhau());
@@ -159,7 +159,7 @@ public class NguoiDungService {
             PreparedStatement st = con.prepareStatement(sql);
             st.setInt(1, nguoiDung.getMaVaiTro());
             st.setString(2, nguoiDung.getTenNguoiDung());
-            st.setInt(3, nguoiDung.getSoDienThoai());
+            st.setString(3, nguoiDung.getSoDienThoai());
             st.setString(4, nguoiDung.getEmail());
             st.setString(5, nguoiDung.getTenTaiKhoan());
             st.setString(6, nguoiDung.getMatKhau());

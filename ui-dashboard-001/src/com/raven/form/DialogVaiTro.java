@@ -4,11 +4,21 @@
  */
 package com.raven.form;
 
+import com.raven.service.VaitroService;
+import com.raven.entity.VaiTro;
+import java.util.*;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author phamh
  */
 public class DialogVaiTro extends javax.swing.JDialog {
+
+    VaitroService vaiTroService = new VaitroService();
+    List<VaiTro> list = new ArrayList();
+    int index = -1;
 
     /**
      * Creates new form DialogVaiTro
@@ -17,6 +27,7 @@ public class DialogVaiTro extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
+        loadbang();
     }
 
     /**
@@ -29,27 +40,47 @@ public class DialogVaiTro extends javax.swing.JDialog {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
+        txtTenVaiTro = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblVaiTro = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("Tên Vai Trò:");
 
-        jButton1.setText("Sửa");
+        jButton1.setText("Làm Mới");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Xóa ");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Cập Nhật");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Thêm");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton4ActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblVaiTro.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -60,7 +91,12 @@ public class DialogVaiTro extends javax.swing.JDialog {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tblVaiTro.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tblVaiTroMousePressed(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblVaiTro);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -74,7 +110,7 @@ public class DialogVaiTro extends javax.swing.JDialog {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(12, 12, 12)
-                                .addComponent(jTextField1)
+                                .addComponent(txtTenVaiTro)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jButton4))
                             .addGroup(layout.createSequentialGroup()
@@ -96,7 +132,7 @@ public class DialogVaiTro extends javax.swing.JDialog {
                 .addGap(20, 20, 20)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtTenVaiTro, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jButton1)
                     .addComponent(jButton4))
                 .addGap(18, 18, 18)
@@ -110,6 +146,31 @@ public class DialogVaiTro extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        // TODO add your handling code here:
+        add();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void tblVaiTroMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblVaiTroMousePressed
+        // TODO add your handling code here:
+        fillTable();
+    }//GEN-LAST:event_tblVaiTroMousePressed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        clear();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:
+        update();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        xoa();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -137,6 +198,9 @@ public class DialogVaiTro extends javax.swing.JDialog {
             java.util.logging.Logger.getLogger(DialogVaiTro.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -153,6 +217,77 @@ public class DialogVaiTro extends javax.swing.JDialog {
         });
     }
 
+    public void clearfrom() {
+        txtTenVaiTro.setText("");
+    }
+
+    public void fillTable() {
+        index = tblVaiTro.getSelectedRow();
+        String tenVaiTro = tblVaiTro.getValueAt(index, 1).toString();
+        txtTenVaiTro.setText(tenVaiTro);
+        System.out.println("" + index);
+    }
+
+    public void loadbang() {
+        index = -1;
+        clearfrom();
+        DefaultTableModel model = new DefaultTableModel();
+
+        model.setColumnIdentifiers(new Object[]{"Mã Vai Trò", "Tên Vai Trò"});
+        List<VaiTro> list = vaiTroService.selectAll();
+
+        for (VaiTro vaiTro : list) {
+            model.addRow(new Object[]{vaiTro.getMaVaitro(), vaiTro.getTenVaitro()});
+        }
+        tblVaiTro.setModel(model);
+    }
+
+    public void add() {
+        String tenVaiTro = txtTenVaiTro.getText();
+        if (tenVaiTro.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Vui lòng nhập tên vai trò");
+            return;
+        }
+        JOptionPane.showMessageDialog(this, vaiTroService.add(tenVaiTro));
+        loadbang();
+    }
+
+    public void update() {
+        int index = tblVaiTro.getSelectedRow();
+        if (index < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn 1 trong các thuộc tính của bảng");
+            return;
+        }
+        int maVaiTro = Integer.valueOf(tblVaiTro.getValueAt(index, 0).toString());
+        System.out.println(maVaiTro);
+
+        String tenVaiTro = txtTenVaiTro.getText();
+        VaiTro vaiTro = new VaiTro(maVaiTro, tenVaiTro);
+
+        JOptionPane.showMessageDialog(this, vaiTroService.update(vaiTro));
+        loadbang();
+    }
+
+    public void xoa() {
+        int index = tblVaiTro.getSelectedRow();
+        if (index < 0) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn 1 trong các vai trò của bảng");
+            return;
+        }
+
+        int maVaiTro = Integer.valueOf(tblVaiTro.getValueAt(index, 0).toString());
+        int choice = JOptionPane.showConfirmDialog(this, "Bạn có muốn xóa thuộc tính này?", "Xác nhận xóa", JOptionPane.YES_NO_OPTION);
+
+        if (choice == 0) {
+            JOptionPane.showMessageDialog(this, vaiTroService.delete(maVaiTro));
+        }
+
+        loadbang();
+    }
+
+    public void clear() {
+        txtTenVaiTro.setText("");
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
@@ -160,7 +295,7 @@ public class DialogVaiTro extends javax.swing.JDialog {
     private javax.swing.JButton jButton4;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable tblVaiTro;
+    private javax.swing.JTextField txtTenVaiTro;
     // End of variables declaration//GEN-END:variables
 }

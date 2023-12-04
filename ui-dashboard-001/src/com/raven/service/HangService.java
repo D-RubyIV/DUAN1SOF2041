@@ -8,8 +8,8 @@ package com.raven.service;
  *
  * @author phamh
  */
-import com.ravent.database.DBContext;
-import com.ravent.entity.Hang;
+import com.raven.database.DBContext;
+import com.raven.entity.Hang;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

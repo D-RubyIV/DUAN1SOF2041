@@ -4,7 +4,7 @@
  */
 package com.raven.utils;
 
-import com.ravent.entity.NguoiDung;
+import com.raven.entity.NguoiDung;
 
 /**
  *

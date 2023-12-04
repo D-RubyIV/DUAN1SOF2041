@@ -5,8 +5,10 @@
  */
 package com.raven.form;
 
+import com.raven.component.EventPagination;
 import com.raven.service.KhuyenMaiService;
-import com.ravent.entity.KhuyenMai;
+import com.raven.entity.KhuyenMai;
+import com.raven.style.PaginationItemRenderStyle1;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
@@ -25,10 +27,21 @@ public class Form_3 extends javax.swing.JPanel {
     KhuyenMaiService khuyenMaiService = new KhuyenMaiService();
     List<KhuyenMai> listEntity = new ArrayList<>();
     int SELECTEDROW = 0;
+    int INDEX_SELECT_PAGE = 1;
+    int CONFIG_LIMIT_DATA_PAGE = 5;
 
     public Form_3() {
         initComponents();
         loadDataToTable();
+
+        pagination1.setPaginationItemRender(new PaginationItemRenderStyle1());
+        pagination1.addEventPagination(new EventPagination() {
+            @Override
+            public void pageChanged(int page) {
+                INDEX_SELECT_PAGE = page;
+                loadDataToTable();
+            }
+        });
     }
 
     public void showMessageBox(String message) {
@@ -36,13 +49,18 @@ public class Form_3 extends javax.swing.JPanel {
     }
 
     public void loadDataToTable() {
-        listEntity = khuyenMaiService.selectAll();
+        String baseSql = "SELECT * FROM KHUYENMAI";
+        baseSql += String.format(" ORDER BY MAKHUYENMAI ASC OFFSET %s ROWS FETCH NEXT %s ROWS ONLY ;", CONFIG_LIMIT_DATA_PAGE * (INDEX_SELECT_PAGE - 1), CONFIG_LIMIT_DATA_PAGE);
+        int totalItem = khuyenMaiService.selectAll().size();
+        listEntity = khuyenMaiService.selectAllByCustomSql(baseSql);
+
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Mã Khuyến Mãi", "Tên Khuyến Mãi", "Mệnh Giá", "Số Lượng", "Ngày Tạo", "Ngày Bắt Đầu", "Ngày Kết Thúc"});
         for (KhuyenMai khuyenMai : listEntity) {
             model.addRow(new Object[]{khuyenMai.getMaKhuyenMai(), khuyenMai.getTenKhuyenMai(), khuyenMai.getMenhGia(), khuyenMai.getSoLuong(), khuyenMai.getNgayTao(), khuyenMai.getNgayBatDau(), khuyenMai.getNgayKetThuc()});
         }
         tblBang.setModel(model);
+        pagination1.setPagegination(INDEX_SELECT_PAGE, (int) Math.ceil((float) totalItem / CONFIG_LIMIT_DATA_PAGE));
     }
 
     public void filltoForm() {
@@ -102,8 +120,7 @@ public class Form_3 extends javax.swing.JPanel {
             if (khuyenMaiService.findById(khuyenMai.getMaKhuyenMai()) == null) {
                 showMessageBox(khuyenMaiService.add(khuyenMai));
                 loadDataToTable();
-            }
-            else{
+            } else {
                 showMessageBox("Mã khuyến mãi đã tồn tại");
             }
 
@@ -156,6 +173,8 @@ public class Form_3 extends javax.swing.JPanel {
         jButton3 = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        pagination1 = new com.raven.component.Pagination();
 
         setBackground(new java.awt.Color(242, 242, 242));
 
@@ -312,6 +331,9 @@ public class Form_3 extends javax.swing.JPanel {
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton1, jButton2, jButton3, jButton4});
 
+        pagination1.setOpaque(false);
+        jPanel2.add(pagination1);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -320,7 +342,8 @@ public class Form_3 extends javax.swing.JPanel {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane1)
+                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -329,8 +352,10 @@ public class Form_3 extends javax.swing.JPanel {
                 .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(19, 19, 19))
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -375,7 +400,9 @@ public class Form_3 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
+    private com.raven.component.Pagination pagination1;
     private javax.swing.JTable tblBang;
     private javax.swing.JTextField txtMaKhuyenMai;
     private javax.swing.JTextField txtMenhGia;

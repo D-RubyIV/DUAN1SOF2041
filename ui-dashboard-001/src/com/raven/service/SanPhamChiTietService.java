@@ -8,8 +8,8 @@ package com.raven.service;
  *
  * @author phamh
  */
-import com.ravent.database.DBContext;
-import com.ravent.entity.SanPhamChiTiet;
+import com.raven.database.DBContext;
+import com.raven.entity.SanPhamChiTiet;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -140,6 +140,32 @@ public class SanPhamChiTietService {
         }
         return listSpChiTiet;
     }
+    public List<SanPhamChiTiet> selectAllByMaHoaDon(int maSanPhamInput) {
+        List<SanPhamChiTiet> listSpChiTiet = new ArrayList<>();
+        String sql = String.format("SELECT * FROM SANPHAMCHITIET WHERE MAHOADON = %s", maSanPhamInput);
+        
+        
+        try {
+            Statement st = new DBContext().getConnect().createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                int maSpChiTiet = rs.getInt("MASANPHAMCHITIET");
+                int maSanPham = rs.getInt("MASANPHAM");
+                int maHang = rs.getInt("MAHANG");
+                int maMauSac = rs.getInt("MAMAUSAC");
+                int maSize = rs.getInt("MASIZE");
+                int maChatLieu = rs.getInt("MACHATLIEU");
+                int soLuong = rs.getInt("SOLUONG");
+                float giaSanPham = rs.getFloat("GIASANPHAM");
+                String mota = rs.getString("MOTA");
+                String hinhAnh = rs.getString("HINHANH");
+                listSpChiTiet.add(new SanPhamChiTiet(maSpChiTiet, maSanPham, maHang, maMauSac, maSize, maChatLieu, soLuong, giaSanPham, mota, hinhAnh));
+            }
+        } catch (Exception e) {
+            System.out.println("SANPHAMCHITIET SERVICE ERROR SELECT ALL:" + e);
+        }
+        return listSpChiTiet;
+    }
 
     public List<SanPhamChiTiet> selectAllByMaSanPham(int maSanPhamInput) {
         List<SanPhamChiTiet> listSpChiTiet = new ArrayList<>();
@@ -233,6 +259,32 @@ public class SanPhamChiTietService {
             return "Update Thất Bại";
         } catch (Exception e) {
             return "Update Lỗi: " + e;
+        }
+    }
+
+    public String called(SanPhamChiTiet spChiTiet) {
+        Connection con = new DBContext().getConnect();
+        String sql = "UPDATE SANPHAMCHITIET SET MASANPHAM=?, MAHANG=?, MAMAUSAC=?, MASIZE=?, MACHATLIEU=?, SOLUONG=?, GIASANPHAM=?, MOTA=?, HINHANH=? WHERE MASANPHAMCHITIET = ?";
+        try {
+            PreparedStatement st = con.prepareStatement(sql);
+            st.setInt(1, spChiTiet.getMaSanPham());
+            st.setInt(2, spChiTiet.getMaHang());
+            st.setInt(3, spChiTiet.getMaMauSac());
+            st.setInt(4, spChiTiet.getMaSize());
+            st.setInt(5, spChiTiet.getMaChatLieu());
+            st.setInt(6, spChiTiet.getSoLuong());
+            st.setFloat(7, spChiTiet.getGiaSanPham());
+            st.setString(8, spChiTiet.getMota());
+            st.setString(9, spChiTiet.getHinhAnh());
+            st.setInt(10, spChiTiet.getMaSanPhamChiTiet());
+
+            int result = st.executeUpdate();
+            if (result > 0) {
+                return "Hủy Thành Công";
+            }
+            return "Hủy Thất Bại";
+        } catch (Exception e) {
+            return "Hủy Lỗi: " + e;
         }
     }
 }

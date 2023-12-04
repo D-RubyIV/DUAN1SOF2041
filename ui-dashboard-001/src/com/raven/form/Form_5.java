@@ -5,6 +5,9 @@
  */
 package com.raven.form;
 
+import com.raven.chart.ModelChart;
+import java.awt.Color;
+
 /**
  *
  * @author RAVEN
@@ -16,6 +19,26 @@ public class Form_5 extends javax.swing.JPanel {
      */
     public Form_5() {
         initComponents();
+        chart.addLegend("Income", new Color(245, 189, 135));
+        chart.addLegend("Expense", new Color(135, 189, 245));
+        chart.addLegend("Profit", new Color(189, 135, 245));
+        
+
+        chart.addData(new ModelChart("January", new double[]{500, 200, 80}));
+        chart.addData(new ModelChart("February", new double[]{600, 750, 90}));
+        chart.addData(new ModelChart("March", new double[]{200, 350, 460}));
+        chart.addData(new ModelChart("April", new double[]{480, 150, 750}));
+        chart.addData(new ModelChart("May", new double[]{350, 540, 300}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addData(new ModelChart("June", new double[]{190, 280, 81}));
+        chart.addWidth(2000);
     }
 
     /**
@@ -27,53 +50,64 @@ public class Form_5 extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jButton2 = new javax.swing.JButton();
+        jPanel1 = new javax.swing.JPanel();
+        jRadioButton1 = new javax.swing.JRadioButton();
+        jDateChooser1 = new com.toedter.calendar.JDateChooser();
+        jLabel2 = new javax.swing.JLabel();
+        jDateChooser2 = new com.toedter.calendar.JDateChooser();
+        chart = new com.raven.chart.Chart();
 
         setBackground(new java.awt.Color(242, 242, 242));
+        setLayout(new java.awt.BorderLayout());
 
-        jButton1.setText("jButton1");
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jToggleButton1.setText("jToggleButton1");
+        jRadioButton1.setText("Doanh thu");
 
-        jButton2.setText("jButton2");
+        jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel2.setText("Đến");
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(50, 50, 50)
-                .addComponent(jButton1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(673, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jToggleButton1)
-                        .addGap(143, 143, 143))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addGap(57, 57, 57))))
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addComponent(jRadioButton1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 410, Short.MAX_VALUE)
+                .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, 123, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(jButton1)
-                .addGap(3, 3, 3)
-                .addComponent(jButton2)
-                .addGap(48, 48, 48)
-                .addComponent(jToggleButton1)
-                .addContainerGap(323, Short.MAX_VALUE))
+
+        jPanel1Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {jDateChooser1, jDateChooser2});
+
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(13, 13, 13)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jDateChooser2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jDateChooser1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jRadioButton1))
+                .addContainerGap(20, Short.MAX_VALUE))
         );
+
+        add(jPanel1, java.awt.BorderLayout.PAGE_START);
+        add(chart, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JToggleButton jToggleButton1;
+    private com.raven.chart.Chart chart;
+    private com.toedter.calendar.JDateChooser jDateChooser1;
+    private com.toedter.calendar.JDateChooser jDateChooser2;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JRadioButton jRadioButton1;
     // End of variables declaration//GEN-END:variables
 }

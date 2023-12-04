@@ -9,9 +9,9 @@ package com.raven.service;
  * @author phamh
  */
 
-import com.ravent.database.DBContext;
-import com.ravent.entity.MauSac;
-import com.ravent.entity.SanPham;
+import com.raven.database.DBContext;
+import com.raven.entity.MauSac;
+import com.raven.entity.SanPham;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

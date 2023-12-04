@@ -29,11 +29,12 @@ public class Menu extends javax.swing.JPanel {
     }
 
     private void init() {
-        listMenu1.addItem(new Model_Menu("1", "Dashboard", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("2", "Sản Phẩm", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("3", "Hóa Đơn", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("4", "Khuyến Mãi", Model_Menu.MenuType.MENU));
-        listMenu1.addItem(new Model_Menu("5", "Người Dùng", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("1", "Thống kê", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("2", "Bán Hàng", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("3", "Sản Phẩm", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("4", "Hóa Đơn", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("5", "Khuyến Mãi", Model_Menu.MenuType.MENU));
+        listMenu1.addItem(new Model_Menu("6", "Người Dùng", Model_Menu.MenuType.MENU));
 
         listMenu1.addItem(new Model_Menu("", "My Data", Model_Menu.MenuType.TITLE));
         listMenu1.addItem(new Model_Menu("", " ", Model_Menu.MenuType.EMPTY));

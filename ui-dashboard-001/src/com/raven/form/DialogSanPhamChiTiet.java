@@ -13,12 +13,12 @@ import com.raven.service.SanPhamService;
 import com.raven.service.SizeService;
 import com.raven.style.PaginationItemRenderStyle1;
 import com.raven.utils.XImage;
-import com.ravent.entity.ChatLieu;
-import com.ravent.entity.Hang;
-import com.ravent.entity.MauSac;
-import com.ravent.entity.SanPham;
-import com.ravent.entity.SanPhamChiTiet;
-import com.ravent.entity.Size;
+import com.raven.entity.ChatLieu;
+import com.raven.entity.Hang;
+import com.raven.entity.MauSac;
+import com.raven.entity.SanPham;
+import com.raven.entity.SanPhamChiTiet;
+import com.raven.entity.Size;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -156,7 +156,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             listSanPhamChiTiet = (List<SanPhamChiTiet>) result[0];
             int totalItem = (int) result[1];
             System.out.println("Size: " + listSanPhamChiTiet.size());
-            pagination1.setPagegination(INDEX_SELECT_PAGE_SPCT, (int) Math.ceil(totalItem / CONFIG_LIMIT_DATA_PAGE));
+            pagination1.setPagegination(INDEX_SELECT_PAGE_SPCT, (int) Math.ceil((float) totalItem / CONFIG_LIMIT_DATA_PAGE));
         }
         if (!searchText.isEmpty()) {
             // By Search
@@ -200,13 +200,13 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             int totalItem = sanPhamChiTietService.selectAllByCustomSql(baseSql).size();
             baseSql += String.format(" ORDER BY SanPhamChiTiet.MASANPHAMCHITIET OFFSET %s ROWS FETCH NEXT %s ROWS ONLY ;", CONFIG_LIMIT_DATA_PAGE * (INDEX_SELECT_PAGE_SPCT - 1), CONFIG_LIMIT_DATA_PAGE);
 
-            pagination1.setPagegination(INDEX_SELECT_PAGE_SPCT, (int) Math.ceil(totalItem / CONFIG_LIMIT_DATA_PAGE));
+            pagination1.setPagegination(INDEX_SELECT_PAGE_SPCT, (int) Math.ceil((float) totalItem / CONFIG_LIMIT_DATA_PAGE));
             listSanPhamChiTiet = sanPhamChiTietService.selectAllByCustomSql(baseSql);
 
         }
         if (locHang == null && locChatLieu == null && locSize == null && locMauSac == null && searchText.isEmpty()) {
             // Nguyen Mau
-            pagination1.setPagegination(INDEX_SELECT_PAGE_SPCT, (int) Math.ceil(sanPhamChiTietService.selectAllByMaSanPham(GLOBAL_MA_SANPHAM).size() / CONFIG_LIMIT_DATA_PAGE) + 1);
+            pagination1.setPagegination(INDEX_SELECT_PAGE_SPCT, (int) Math.ceil((float) sanPhamChiTietService.selectAllByMaSanPham(GLOBAL_MA_SANPHAM).size() / CONFIG_LIMIT_DATA_PAGE));
             listSanPhamChiTiet = sanPhamChiTietService.selectAllFromAToB(CONFIG_LIMIT_DATA_PAGE * (INDEX_SELECT_PAGE_SPCT - 1), CONFIG_LIMIT_DATA_PAGE, GLOBAL_MA_SANPHAM);
 
         }
@@ -336,7 +336,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
         } catch (Exception e) {
             maSanPhamChiTiet = 0;
         }
-        
+
         int maSanPham = ((SanPham) cboSanPham.getSelectedItem()).getMaSanPham();
         int maHang = ((Hang) cboHang.getSelectedItem()).getMaHang();
         int maMauSac = ((MauSac) cboMauSac.getSelectedItem()).getMaMauSac();
@@ -636,6 +636,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Hãng"));
 
+        cboLocHang.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
         cboLocHang.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboLocHang.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -651,7 +652,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(cboLocHang, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(cboLocHang)
         );
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Màu sắc"));
