@@ -43,6 +43,29 @@ public class NguoiDungService {
         return null;
     }
 
+    public NguoiDung findByTenTaiKhoan(String tenTaiTKhoan) {
+        String sql = "SELECT * FROM NGUOIDUNG WHERE TENTAIKHOAN LIKE N'" + tenTaiTKhoan + "'";
+        try {
+            Statement statement = new DBContext().getConnect().createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()) {
+                int maNd = rs.getInt("MANGUOIDUNG");
+                int maVt = rs.getInt("MAVAITRO");
+                String tenNd = rs.getString("TENNGUOIDUNG");
+                String soDt = rs.getString("SODIENTHOAI");
+                String email = rs.getString("EMAIL");
+                String tenTk = rs.getString("TENTAIKHOAN");
+                String matKhau = rs.getString("MATKHAU");
+
+                NguoiDung nguoiDung = new NguoiDung(maNd, maVt, tenNd, soDt, email, tenTk, matKhau);
+                return nguoiDung;
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return null;
+    }
+
     public List<NguoiDung> selectAll() {
         List<NguoiDung> listNguoiDung = new ArrayList<>();
         String sql = "SELECT * FROM NGUOIDUNG";

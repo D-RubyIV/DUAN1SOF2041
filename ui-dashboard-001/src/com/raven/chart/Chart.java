@@ -1,13 +1,20 @@
 package com.raven.chart;
 
-import com.raven.chart.BlankPlotChart;
-import com.raven.chart.BlankPlotChatRender;
-import com.raven.chart.SeriesSize;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JScrollBar;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.Timer;
 
 public class Chart extends javax.swing.JPanel {
 
@@ -15,7 +22,6 @@ public class Chart extends javax.swing.JPanel {
     private List<ModelChart> model = new ArrayList<>();
     private final int seriesSize = 12;
     private final int seriesSpace = 6;
-    private BlankPlotChart blankPlotChart = new BlankPlotChart();
 
     public Chart() {
         initComponents();
@@ -27,6 +33,8 @@ public class Chart extends javax.swing.JPanel {
 
             @Override
             public void renderSeries(BlankPlotChart chart, Graphics2D g2, SeriesSize size, int index) {
+                Insets insets = getInsets();
+                FontMetrics ft = g2.getFontMetrics();
                 double totalSeriesWidth = (seriesSize * legends.size()) + (seriesSpace * (legends.size() - 1));
                 double x = (size.getWidth() - totalSeriesWidth) / 2;
                 for (int i = 0; i < legends.size(); i++) {
@@ -34,6 +42,10 @@ public class Chart extends javax.swing.JPanel {
                     g2.setColor(legend.getColor());
                     double seriesValues = chart.getSeriesValuesOf(model.get(index).getValues()[i], size.getHeight());
                     g2.fillRect((int) (size.getX() + x), (int) (size.getY() + size.getHeight() - seriesValues), seriesSize, (int) seriesValues);
+                    Rectangle2D r2 = ft.getStringBounds(String.valueOf((int) model.get(index).getValues()[i]), g2);
+                    String textValue = String.valueOf((int) model.get(index).getValues()[i]);
+                    int spaceLui = textValue.length() <= 2?0: (textValue.length()/2) * 4;
+                    g2.drawString(textValue, (int) (size.getX() + x - spaceLui ), (int) (size.getY() + size.getHeight() - seriesValues - 2)); //Cuuuuuuuuuuuuuuuuuuuuuuuuuu
                     x += seriesSpace + seriesSize;
                 }
             }
@@ -57,9 +69,41 @@ public class Chart extends javax.swing.JPanel {
         }
     }
 
-    public void addWidth(int width) {
-        Dimension newSize = new Dimension(blankPlotChart.getWidth() + width, blankPlotChart.getHeight());
+    public void setWidth(int width) {
+        Dimension newSize = new Dimension(width, blankPlotChart.getHeight());
         blankPlotChart.setPreferredSize(newSize);
+        System.out.println("MAX BLANK SIZE: " + blankPlotChart.getMaximumSize());
+        jScrollPane1.getViewport().revalidate();
+        jScrollPane1.getViewport().repaint();
+        jScrollPane1.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+
+    }
+
+    public void clear() {
+        panelLegend.removeAll();
+        legends.clear();
+        model.clear();
+    }
+
+    public void scrollToBottomWithAnimation() {
+        JScrollPane scrollPane = jScrollPane1;
+        JScrollBar horizontalScrollBar = scrollPane.getHorizontalScrollBar();
+
+        int animationDuration = 1000; // in milliseconds
+        int steps = 100;
+        int delay = animationDuration / steps;
+
+        Timer timer = new Timer(delay, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                horizontalScrollBar.setValue(10);
+                horizontalScrollBar.setValue(0);
+                ((Timer) e.getSource()).stop();
+                return;
+            }
+        });
+
+        timer.start();
     }
 
     @SuppressWarnings("unchecked")
@@ -68,45 +112,40 @@ public class Chart extends javax.swing.JPanel {
 
         panelLegend = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        blankPlotChart1 = new com.raven.chart.BlankPlotChart();
+        blankPlotChart = new com.raven.chart.BlankPlotChart();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
-        javax.swing.GroupLayout panelLegendLayout = new javax.swing.GroupLayout(panelLegend);
-        panelLegend.setLayout(panelLegendLayout);
-        panelLegendLayout.setHorizontalGroup(
-            panelLegendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 873, Short.MAX_VALUE)
-        );
-        panelLegendLayout.setVerticalGroup(
-            panelLegendLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 41, Short.MAX_VALUE)
-        );
+        panelLegend.setOpaque(false);
+        panelLegend.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 0));
 
-        jScrollPane1.setViewportView(blankPlotChart1);
+        blankPlotChart.setMaximumSize(new java.awt.Dimension(999999999, 999999999));
+        jScrollPane1.setViewportView(blankPlotChart);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(6, 6, 6)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
-                    .addComponent(panelLegend, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(panelLegend, javax.swing.GroupLayout.DEFAULT_SIZE, 809, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 323, Short.MAX_VALUE)
+                .addContainerGap()
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(panelLegend, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(panelLegend, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private com.raven.chart.BlankPlotChart blankPlotChart1;
+    private com.raven.chart.BlankPlotChart blankPlotChart;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel panelLegend;
     // End of variables declaration//GEN-END:variables

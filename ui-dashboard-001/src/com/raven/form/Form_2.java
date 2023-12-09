@@ -6,6 +6,8 @@
 package com.raven.form;
 
 import com.raven.component.EventPagination;
+import com.raven.entity.ChatLieu;
+import com.raven.entity.Hang;
 import com.raven.model.AddressDetails;
 import com.raven.model.HeaderDetails;
 import com.raven.model.Product;
@@ -24,9 +26,11 @@ import com.raven.service.SizeService;
 import com.raven.style.PaginationItemRenderStyle1;
 import com.raven.entity.HoaDon;
 import com.raven.entity.HoaDonChiTiet;
+import com.raven.entity.MauSac;
 import com.raven.entity.NguoiDung;
 import com.raven.entity.SanPham;
 import com.raven.entity.SanPhamChiTiet;
+import com.raven.entity.Size;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
@@ -151,13 +155,19 @@ public class Form_2 extends javax.swing.JPanel {
                 List<Product> productList = new ArrayList<>();
                 for (HoaDonChiTiet hoaDonChiTiet : listHoaDonChiTietDaMua) {
                     SanPhamChiTiet sanPhamChiTiet = sanPhamChiTietService.findById(hoaDonChiTiet.getMaSanPhamChiTiet());
+                    MauSac mauSac = mauSacService.findById(sanPhamChiTiet.getMaMauSac());
+                    ChatLieu chatLieu = chatLieuService.findById(sanPhamChiTiet.getMaChatLieu());
+                    Size size = sizeService.findById(sanPhamChiTiet.getMaSize());
+                    Hang hang = hangService.findById(sanPhamChiTiet.getMaHang());
                     SanPham sanPham = sanPhamService.findById(sanPhamChiTiet.getMaSanPham());
                     float thanhTien = Float.valueOf(hoaDonChiTiet.getSoLuong() * (float) sanPhamChiTiet.getGiaSanPham());
-                    productList.add(new Product(sanPham.getTenSanPham(), hoaDonChiTiet.getSoLuong(), thanhTien));
+                    String moTa = String.format("Hang: %s, Mau Sac: %s, Size: %s, ChatLieu: %s", hang.getTenHang(), chatLieu.getTenChatLieu(), size.getTenSize(), mauSac.getTenMauSac());
+                    productList.add(new Product(sanPham.getTenSanPham(), hang.getTenHang(), size.getTenSize(), chatLieu.getTenChatLieu(), mauSac.getTenMauSac(), sanPhamChiTiet.getSoLuong(), thanhTien));
                 }
 
                 productList = cepdf.modifyProductList(productList);
-                cepdf.createProduct(productList);
+                float tienGiamGia = hoaDon.getTongTienGiamGia();
+                cepdf.createProduct(productList, String.valueOf(tienGiamGia));
                 //Product End
 
                 //Term and Condition Start
@@ -219,8 +229,8 @@ public class Form_2 extends javax.swing.JPanel {
                 }
                 Date ngayTao = jDateNgayTao.getDate();
                 String ngay = toDate(ngayTao);
-                System.out.println("NGAY: "+ ngay);
-                baseSql += String.format(" THOIGIANTAO = '%s'" , ngay);
+                System.out.println("NGAY: " + ngay);
+                baseSql += String.format(" THOIGIANTAO = '%s'", ngay);
             }
             if (jDateNgayThanhToan.getDate() != null) {
                 if (baseSql.contains("WHERE") == false) {
@@ -230,8 +240,8 @@ public class Form_2 extends javax.swing.JPanel {
                 }
                 Date ngayTao = jDateNgayThanhToan.getDate();
                 String ngay = toDate(ngayTao);
-                System.out.println("NGAY: "+ ngay);
-                baseSql += String.format(" THOIGIANTHANHTOAN = '%s'" , ngay);
+                System.out.println("NGAY: " + ngay);
+                baseSql += String.format(" THOIGIANTHANHTOAN = '%s'", ngay);
             }
             if (!searchText.isEmpty()) {
                 if (baseSql.contains("WHERE") == false) {
@@ -584,16 +594,26 @@ public class Form_2 extends javax.swing.JPanel {
 
     private void jDateNgayTaoPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jDateNgayTaoPropertyChange
         // TODO add your handling code here:
-        loadDataHoaDonToBang();
+        if ("date".equals(evt.getPropertyName())) {
+            System.out.println(evt.getPropertyName()
+                    + ": " + (Date) evt.getNewValue());
+            loadDataHoaDonToBang();
+        }
     }//GEN-LAST:event_jDateNgayTaoPropertyChange
 
     private void jDateNgayThanhToanPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_jDateNgayThanhToanPropertyChange
         // TODO add your handling code here:
-        loadDataHoaDonToBang();
+        if ("date".equals(evt.getPropertyName())) {
+            System.out.println(evt.getPropertyName()
+                    + ": " + (Date) evt.getNewValue());
+            loadDataHoaDonToBang();
+        }
+
     }//GEN-LAST:event_jDateNgayThanhToanPropertyChange
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+
         jDateNgayTao.setDate(null);
         loadDataHoaDonToBang();
     }//GEN-LAST:event_jButton2ActionPerformed

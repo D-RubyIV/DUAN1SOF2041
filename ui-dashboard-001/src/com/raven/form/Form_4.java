@@ -6,6 +6,7 @@
 package com.raven.form;
 
 import com.raven.component.EventPagination;
+import com.raven.entity.Hang;
 import com.raven.service.NguoiDungService;
 import com.raven.service.VaitroService;
 import com.raven.style.PaginationItemRenderStyle1;
@@ -16,6 +17,7 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -103,7 +105,8 @@ public class Form_4 extends javax.swing.JPanel {
         DefaultTableModel defaultTableModel = new DefaultTableModel();
         defaultTableModel.setColumnIdentifiers(new Object[]{"Ma người dùng", "Tên người dùng", "Tên Vai Trò", "SĐT", "Email", "Tên tài khoản", "Mật khẩu"});
         for (NguoiDung nguoiDung : listNguoiDung) {
-            defaultTableModel.addRow(new Object[]{nguoiDung.getMaNguoiDung(), nguoiDung.getTenNguoiDung(), nguoiDung.getMaVaiTro(), nguoiDung.getSoDienThoai(), nguoiDung.getEmail(),
+            String tenVaiTro = vaitroService.findById(nguoiDung.getMaVaiTro()).getTenVaitro();
+            defaultTableModel.addRow(new Object[]{nguoiDung.getMaNguoiDung(), nguoiDung.getTenNguoiDung(), tenVaiTro, nguoiDung.getSoDienThoai(), nguoiDung.getEmail(),
                 nguoiDung.getTenTaiKhoan(), nguoiDung.getMatKhau()});
         }
         tblNguoiDung.setModel(defaultTableModel);
@@ -129,6 +132,85 @@ public class Form_4 extends javax.swing.JPanel {
                 loadVaiTroToComboBoxLoc();
             }
         });
+    }
+
+    public void addEntity() {
+        NguoiDung nguoiDung = getObj();
+        if (nguoiDung != null) {
+            showMessageBox(nguoiDungService.add(nguoiDung));
+            loadNguoiDungToTable();
+        }
+    }
+
+    public void loadDataToForm() {
+        NguoiDung nguoiDung = listNguoiDung.get(tblNguoiDung.getSelectedRow());
+        txtTenNguoiDung.setText(nguoiDung.getTenNguoiDung());
+        txtEmail.setText(nguoiDung.getEmail());
+        txtSoDienThoai.setText(nguoiDung.getSoDienThoai());
+        txtTenTaiKhoan.setText(nguoiDung.getTenTaiKhoan());
+        txtMatKhau.setText(nguoiDung.getMatKhau());
+        DefaultComboBoxModel<VaiTro> modelVaiTro = (DefaultComboBoxModel) cboVaiTro.getModel();
+        for (int i = 0; i < modelVaiTro.getSize(); i++) {
+            if (modelVaiTro.getElementAt(i).getMaVaitro() == nguoiDung.getMaVaiTro()) {
+                cboVaiTro.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
+
+    public void deleteEntity() {
+        NguoiDung nguoiDung = listNguoiDung.get(tblNguoiDung.getSelectedRow());
+        showMessageBox(nguoiDungService.delete(nguoiDung.getMaNguoiDung()));
+        loadNguoiDungToTable();
+    }
+
+    public void editEntity() {
+        NguoiDung nguoiDung = getObj();
+        if (nguoiDung != null) {
+            showMessageBox(nguoiDungService.update(nguoiDung));
+            loadNguoiDungToTable();
+        }
+    }
+
+    public void showMessageBox(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    public NguoiDung getObj() {
+        NguoiDung nd = new NguoiDung();
+        String tenNguoiDung = txtTenNguoiDung.getText();
+        String soDienThoai = txtSoDienThoai.getText();
+        String email = txtEmail.getText();
+        String tenTaiKhoan = txtTenTaiKhoan.getText();
+        String matkhau = txtMatKhau.getText();
+        VaiTro vaiTro = ((VaiTro) cboVaiTro.getSelectedItem());
+
+        if (tenNguoiDung.isEmpty()) {
+            showMessageBox("Vui Lòng nhập tên người dùng");
+            return null;
+        }
+        if (soDienThoai.isEmpty()) {
+            showMessageBox("Vui Lòng nhập số điện thoại");
+            return null;
+        }
+        if (email.isEmpty()) {
+            showMessageBox("Vui Lòng nhập số lượng email");
+            return null;
+        }
+        if (tenTaiKhoan.isEmpty()) {
+            showMessageBox("Vui Lòng nhập tên tài khoản");
+            return null;
+        }
+        if (matkhau.isEmpty()) {
+            showMessageBox("Vui Lòng nhập matkhau");
+            return null;
+        }
+        if (nguoiDungService.findByTenTaiKhoan(tenTaiKhoan) != null) {
+            showMessageBox("Tên tài khoản đã tồn tại");
+            return null;
+
+        }
+        return new NguoiDung(WIDTH, vaiTro.getMaVaitro(), tenNguoiDung, soDienThoai, email, tenTaiKhoan, matkhau);
     }
 
     /**
@@ -180,6 +262,11 @@ public class Form_4 extends javax.swing.JPanel {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tblNguoiDung.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tblNguoiDungMousePressed(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblNguoiDung);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Lọc"));
@@ -247,6 +334,11 @@ public class Form_4 extends javax.swing.JPanel {
         });
 
         btnSua.setText("Sửa");
+        btnSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSuaActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Tên người dùng:");
 
@@ -264,10 +356,20 @@ public class Form_4 extends javax.swing.JPanel {
         });
 
         btnThem.setText("Thêm");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemActionPerformed(evt);
+            }
+        });
 
         jLabel4.setText("Tên tài khoản");
 
         btnXoa.setText("Xóa");
+        btnXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaActionPerformed(evt);
+            }
+        });
 
         jButton5.setText("+");
         jButton5.addActionListener(new java.awt.event.ActionListener() {
@@ -424,6 +526,26 @@ public class Form_4 extends javax.swing.JPanel {
         // TODO add your handling code here:
         loadNguoiDungToTable();
     }//GEN-LAST:event_txtTimKiemKeyReleased
+
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+        // TODO add your handling code here:
+        addEntity();
+    }//GEN-LAST:event_btnThemActionPerformed
+
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        // TODO add your handling code here:
+        deleteEntity();
+    }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+        // TODO add your handling code here:
+        editEntity();
+    }//GEN-LAST:event_btnSuaActionPerformed
+
+    private void tblNguoiDungMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblNguoiDungMousePressed
+        // TODO add your handling code here:
+        loadDataToForm();
+    }//GEN-LAST:event_tblNguoiDungMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

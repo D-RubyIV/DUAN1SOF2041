@@ -58,7 +58,7 @@ public class RENEWHOADON {
             }
 
             // Sinh số nguyên ngẫu nhiên từ 1 đến 100
-            int randomNumber = random.nextInt(300) + 1;
+            int randomNumber = random.nextInt(60) + 1;
             Date currentDate = new Date();
             Calendar calendar = new GregorianCalendar();
             calendar.setTime(currentDate);

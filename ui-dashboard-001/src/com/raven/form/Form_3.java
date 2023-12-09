@@ -193,6 +193,9 @@ public class Form_3 extends javax.swing.JPanel {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tblBangMouseClicked(evt);
             }
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                tblBangMousePressed(evt);
+            }
         });
         jScrollPane1.setViewportView(tblBang);
 
@@ -331,6 +334,8 @@ public class Form_3 extends javax.swing.JPanel {
 
         jPanel1Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jButton1, jButton2, jButton3, jButton4});
 
+        jPanel2.setBackground(new java.awt.Color(102, 102, 102));
+
         pagination1.setOpaque(false);
         jPanel2.add(pagination1);
 
@@ -366,8 +371,7 @@ public class Form_3 extends javax.swing.JPanel {
 
     private void tblBangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBangMouseClicked
         // TODO add your handling code here:
-        SELECTEDROW = tblBang.getSelectedRow();
-        filltoForm();
+
     }//GEN-LAST:event_tblBangMouseClicked
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
@@ -384,6 +388,12 @@ public class Form_3 extends javax.swing.JPanel {
         // TODO add your handling code here:
         clear();
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void tblBangMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblBangMousePressed
+        // TODO add your handling code here:
+        SELECTEDROW = tblBang.getSelectedRow();
+        filltoForm();
+    }//GEN-LAST:event_tblBangMousePressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

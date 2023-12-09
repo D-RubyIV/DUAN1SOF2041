@@ -38,7 +38,7 @@ public class Main extends javax.swing.JFrame {
         this.setUndecorated(true);
         initComponents();
         setLocationRelativeTo(null);
-        
+
         UIDefaults ui = UIManager.getDefaults();
         ui.put("ScrollBarUI", ScrollBarWin11UI.class.getCanonicalName());
 
@@ -47,8 +47,6 @@ public class Main extends javax.swing.JFrame {
         NguoiDung nguoiDung = nguoiDungService.findById(1);
         Auth.user = nguoiDung;
 
-        
-        
         setBackground(new Color(0, 0, 0, 0));
         menu.initMoving(Main.this);
         menu.addEventMenuSelected(new EventMenuSelected() {
@@ -71,7 +69,7 @@ public class Main extends javax.swing.JFrame {
         });
 
         //  set when system open start with home form
-        setForm(new Form_Home());
+        setForm(new Form_5());
     }
 
     private void setForm(JComponent com) {

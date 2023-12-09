@@ -9,7 +9,6 @@ import com.raven.model.HeaderDetails;
 import com.raven.model.Product;
 import com.raven.model.ProductTableHeader;
 import com.raven.service.CodingErrorPdfInvoiceCreator;
-
 /**
  *
  * @author phamh
@@ -30,16 +29,20 @@ import java.util.Set;
 public class Test {
 
     public static void main(String[] args) throws FileNotFoundException {
-        
-        Integer[] array = {1, 2, 3, 4, 2, 1, 5, 6, 3, 7, 8, 8};
 
-        Set<Integer> set = new HashSet<>(Arrays.asList(array));
+        // Đặt ngày bắt đầu và ngày kết thúc
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 1, 10);
 
-        Integer[] result = set.toArray(new Integer[0]);
-
-        System.out.println(Arrays.toString(result));
-        
-
-     
+        // Hiển thị các ngày trong khoảng
+        displayDatesInRange(startDate, endDate);
     }
+
+    private static void displayDatesInRange(LocalDate startDate, LocalDate endDate) {
+        // Sử dụng vòng lặp for để duyệt qua các ngày trong khoảng
+        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+            System.out.println(date);
+        }
+    }
+
 }

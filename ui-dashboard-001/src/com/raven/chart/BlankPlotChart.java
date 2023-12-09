@@ -88,6 +88,7 @@ public class BlankPlotChart extends JComponent {
             createLine(g2);
             createValues(g2);
             createLabelText(g2);
+            createLabelText2(g2);
             renderSeries(g2);
         }
     }
@@ -127,6 +128,28 @@ public class BlankPlotChart extends JComponent {
             locationY += space;
             valuesCount += niceScale.getTickSpacing();
         }
+    }
+
+    private void createLabelText2(Graphics2D g2) {
+        if (labelCount > 0) {
+            Insets insets = getInsets();
+            double textWidth = getMaxValuesTextWidth(g2);
+            double textHeight = getLabelTextHeight(g2);
+            double spaceText = 5;
+            double width = getWidth() - insets.left - insets.right - textWidth - spaceText;
+            double space = width / labelCount;
+            double locationX = insets.left + textWidth + spaceText;
+            double locationY = insets.bottom + textHeight;
+
+            FontMetrics ft = g2.getFontMetrics();
+            for (int i = 0; i < labelCount; i++) {
+                double centerX = ((locationX + space / 2));
+                g2.setColor(getForeground());
+                locationX += space;
+            }
+        }
+
+
     }
 
     private void createLabelText(Graphics2D g2) {
@@ -198,7 +221,7 @@ public class BlankPlotChart extends JComponent {
 
     public SeriesSize getRectangle(int index, double height, double space, double startX, double startY) {
         double x = startX + space * index;
-        SeriesSize size = new SeriesSize(x, startY+1, space, height);
+        SeriesSize size = new SeriesSize(x, startY + 1, space, height);
         return size;
     }
 

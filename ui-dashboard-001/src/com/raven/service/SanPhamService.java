@@ -58,6 +58,21 @@ public class SanPhamService {
         return listSanPham;
     }
     
+    public int getCountSanPham(int maSanPham) {
+        int count = 0;
+        String sql = String.format( "SELECT SUM(soLuong) AS TONGSO FROM [SanPhamChiTiet] JOIN SanPham ON SanPhamChiTiet.maSanPham = SanPham.maSanPham  GROUP BY SanPhamChiTiet.maSanPham HAVING SanPhamChiTiet.maSanPham = %s", maSanPham);
+        try {
+            Statement st = new DBContext().getConnect().createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                count = rs.getInt("TONGSO");
+            }
+        } catch (Exception e) {
+            System.out.println("SANPHAM SERVICE ERROR getCOuntSanPham:" + e);
+        }
+        return count;
+    }
+    
     public List<SanPham> selectAllFromAToB(int a, int b) {
         List<SanPham> listSanPham = new ArrayList<>();
         String sql = String.format("SELECT * FROM SANPHAM ORDER BY SanPham.maSanPham OFFSET %s ROWS FETCH NEXT %s ROWS ONLY", a, b);

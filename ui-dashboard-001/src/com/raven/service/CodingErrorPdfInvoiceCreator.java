@@ -25,6 +25,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class CodingErrorPdfInvoiceCreator {
@@ -43,7 +45,7 @@ public class CodingErrorPdfInvoiceCreator {
     float twocol = 285f;
     float twocol150 = twocol + 150f;
     float twocolumnWidth[] = {twocol150, twocol};
-    float threeColumnWidth[] = {threecol, threecol, threecol};
+    float sevenColumnWidth[] = {threecol, threecol, threecol, threecol, threecol, threecol, threecol};
     float fullwidth[] = {threecol * 3};
     public static final String BODONIBLACK = "fonts/vuArial.ttf";
 
@@ -73,18 +75,28 @@ public class CodingErrorPdfInvoiceCreator {
         } else {
             pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new MyFooter(document, TncList, imagePath));
         }
-
         document.close();
     }
 
-    public void createProduct(List<Product> productList) {
+    public static String removeAccent(String input) {
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        System.out.println(pattern.matcher(normalized).replaceAll("").toLowerCase());
+        return pattern.matcher(normalized).replaceAll("");
+    }
+
+    public void createProduct(List<Product> productList, String tienGiamGia) {
         float threecol = 190f;
         float fullwidth[] = {threecol * 3};
-        Table threeColTable2 = new Table(threeColumnWidth);
+        Table threeColTable2 = new Table(sevenColumnWidth);
         float totalSum = getTotalSum(productList);
         for (Product product : productList) {
             float total = product.getQuantity() * product.getPriceperpeice();
-            threeColTable2.addCell(new Cell().add(product.getPname().orElse("")).setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getPname().orElse("")))).setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenHang()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenSize()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenChatLieu()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenMauSac()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
             threeColTable2.addCell(new Cell().add(String.valueOf(product.getQuantity())).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
             threeColTable2.addCell(new Cell().add(String.valueOf(total)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER)).setMarginRight(15f);
         }
@@ -96,12 +108,27 @@ public class CodingErrorPdfInvoiceCreator {
         threeColTable4.addCell(new Cell().add(fullwidthDashedBorder(fullwidth)).setBorder(Border.NO_BORDER));
         document.add(threeColTable4);
 
-        Table threeColTable3 = new Table(threeColumnWidth);
+        Table threeColTable3 = new Table(sevenColumnWidth);
         threeColTable3.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
-        threeColTable3.addCell(new Cell().add("Total").setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
-        threeColTable3.addCell(new Cell().add(String.valueOf(totalSum)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER)).setMarginRight(15f);
+        threeColTable3.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable3.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable3.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable3.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable3.addCell(new Cell().add("Tong:").setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+        threeColTable3.addCell(new Cell().add(String.format("%s", totalSum)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER)).setMarginRight(15f);
 
+        Table threeColTable5 = new Table(sevenColumnWidth);
+        threeColTable5.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable5.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable5.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable5.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable5.addCell(new Cell().add("").setBorder(Border.NO_BORDER)).setMarginLeft(10f);
+        threeColTable5.addCell(new Cell().add("Giam:").setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+        threeColTable5.addCell(new Cell().add(String.format("%s", tienGiamGia)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER)).setMarginRight(15f);
+
+        document.add(threeColTable5);
         document.add(threeColTable3);
+
         document.add(fullwidthDashedBorder(fullwidth));
         document.add(new Paragraph("\n"));
         document.add(getDividerTable(fullwidth).setBorder(new SolidBorder(Color.GRAY, 1)).setMarginBottom(15f));
@@ -113,24 +140,22 @@ public class CodingErrorPdfInvoiceCreator {
 
     public List<Product> getDummyProductList() {
         List<Product> productList = new ArrayList<>();
-        productList.add(new Product("apple", 2, 159));
-        productList.add(new Product("mango", 4, 205));
-        productList.add(new Product("banana", 2, 90));
-        productList.add(new Product("grapes", 3, 10));
-        productList.add(new Product("apple", 5, 159));
-        productList.add(new Product("kiwi", 2, 90));
+
         return productList;
     }
 
     public void createTableHeader(ProductTableHeader productTableHeader) {
         Paragraph producPara = new Paragraph("Products");
         document.add(producPara.setBold());
-        Table threeColTable1 = new Table(threeColumnWidth);
+        Table threeColTable1 = new Table(sevenColumnWidth);
         threeColTable1.setBackgroundColor(Color.BLACK, 0.7f);
-
-        threeColTable1.addCell(new Cell().add("Description").setBold().setFontColor(Color.WHITE).setBorder(Border.NO_BORDER));
-        threeColTable1.addCell(new Cell().add("Quantity").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
-        threeColTable1.addCell(new Cell().add("Price").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER)).setMarginRight(15f);
+        threeColTable1.addCell(new Cell().add("Ten San Pham").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER));
+        threeColTable1.addCell(new Cell().add("Hang").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+        threeColTable1.addCell(new Cell().add("Size").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+        threeColTable1.addCell(new Cell().add("ChatLieu").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+        threeColTable1.addCell(new Cell().add("MauSac").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+        threeColTable1.addCell(new Cell().add("SoLuong").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+        threeColTable1.addCell(new Cell().add("Gia").setBold().setFontColor(Color.WHITE).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER)).setMarginRight(15f);
         document.add(threeColTable1);
     }
 
