@@ -11,6 +11,7 @@ import com.raven.form.Form_2;
 import com.raven.form.Form_3;
 import com.raven.form.Form_4;
 import com.raven.form.Form_5;
+import com.raven.form.Form_6;
 import com.raven.form.Form_Home;
 import com.raven.scroll.ScrollBarWin11UI;
 import com.raven.service.NguoiDungService;
@@ -46,12 +47,15 @@ public class Main extends javax.swing.JFrame {
         NguoiDungService nguoiDungService = new NguoiDungService();
         NguoiDung nguoiDung = nguoiDungService.findById(1);
         Auth.user = nguoiDung;
+        
+        Form_6 form_6 = new Form_6();
 
         setBackground(new Color(0, 0, 0, 0));
         menu.initMoving(Main.this);
         menu.addEventMenuSelected(new EventMenuSelected() {
             @Override
             public void selected(int index) {
+                System.out.println("Index: " + index);
                 if (index == 0) {
                     setForm(new Form_5());
                 } else if (index == 1) {
@@ -64,6 +68,8 @@ public class Main extends javax.swing.JFrame {
                     setForm(new Form_3());
                 } else if (index == 5) {
                     setForm(new Form_4());
+                } else if (index == 11) {
+                    setForm(form_6);
                 }
             }
         });
@@ -131,9 +137,7 @@ public class Main extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(panelBorder1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 7, Short.MAX_VALUE))
+            .addComponent(panelBorder1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();

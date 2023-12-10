@@ -1,17 +1,12 @@
-
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.raven.service;
 
-/**
- *
- * @author phamh
- */
-
 import com.raven.model.ModelMessage;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
@@ -19,12 +14,13 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
-import java.util.Properties;
+import javax.mail.internet.*;
+import javax.mail.*;
+import javax.mail.internet.*;
 
 public class EmailService {
 
-    public ModelMessage sendMain(String toEmail, String code) {
+    public ModelMessage sendMail(List<String> listEmail, String messageString, String fileLocation) {
         ModelMessage ms = new ModelMessage(false, "");
         String from = "******@gmail.com";
         Properties prop = new Properties();
@@ -32,8 +28,11 @@ public class EmailService {
         prop.put("mail.smtp.port", "587");
         prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.protocols", "TLSv1.2");
         String username = "haanhhy01f@gmail.com";
         String password = "ffzc ials ccct zvpf";    //  Your email password here
+//        String[] to = {"phamhaanh2k4.php@gmail.com", "anhphph36519@fpt.edu.vn", "recipient3@example.com"};
+
         Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
@@ -43,11 +42,40 @@ public class EmailService {
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress(from));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
-            message.setSubject("Verify Code");
-            message.setText(code);
+
+            InternetAddress[] toAddresses = new InternetAddress[listEmail.size()];
+            for (int i = 0; i < listEmail.size(); i++) {
+                toAddresses[i] = new InternetAddress(listEmail.get(i));
+            }
+            message.setRecipients(Message.RecipientType.TO, toAddresses);
+
+            message.setSubject("HOINE SNEAKER SHOP EMAIL");
+            message.setText(messageString);
+
+            /////////////////////////
+            File file = new File(fileLocation);
+            System.out.println(fileLocation);
+            if (file.exists() == true) {
+                System.out.println("TON TAI FILE");
+                
+                BodyPart messageBodyPart = new MimeBodyPart();
+                messageBodyPart.setText(messageString);
+
+                MimeBodyPart attachmentPart = new MimeBodyPart();
+                attachmentPart.attachFile(file);
+                
+                Multipart multipart = new MimeMultipart();
+                multipart.addBodyPart(messageBodyPart);
+                multipart.addBodyPart(attachmentPart);
+                message.setContent(multipart);
+            }
+            ////////////////////////
+
             Transport.send(message);
-            ms.setSuccess(true);
+
+            System.out.println("Email sent successfully");
+            ms.setMessage("Email sent successfully");
+
         } catch (MessagingException e) {
             if (e.getMessage().equals("Invalid Addresses")) {
                 ms.setMessage("Invalid email");
@@ -55,6 +83,9 @@ public class EmailService {
                 System.out.println(e);
                 ms.setMessage("Error");
             }
+        } catch (IOException ex) {
+            System.out.println(ex);
+            ms.setMessage("Error");
         }
         System.out.println(ms);
         return ms;

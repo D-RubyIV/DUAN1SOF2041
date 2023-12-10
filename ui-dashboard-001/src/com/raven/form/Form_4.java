@@ -6,7 +6,6 @@
 package com.raven.form;
 
 import com.raven.component.EventPagination;
-import com.raven.entity.Hang;
 import com.raven.service.NguoiDungService;
 import com.raven.service.VaitroService;
 import com.raven.style.PaginationItemRenderStyle1;
@@ -14,11 +13,17 @@ import com.raven.entity.NguoiDung;
 import com.raven.entity.VaiTro;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -49,6 +54,31 @@ public class Form_4 extends javax.swing.JPanel {
                 loadNguoiDungToTable();
             }
         });
+    }
+
+    public void exportExcel() {
+        JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        // Chỉ cho phép chọn thư mục, không chọn file
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        // Hiển thị hộp thoại chọn thư mục và kiểm tra xem người dùng đã chọn thư mục hay không
+        int returnValue = fileChooser.showDialog(null, "Chọn thư mục");
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            // Lấy đường dẫn của thư mục được chọn
+            String selectedDirectoryPath = fileChooser.getSelectedFile().getAbsolutePath();
+            System.out.println("Đường dẫn thư mục đã chọn: " + selectedDirectoryPath + "\\temp.xlsx");
+            List<NguoiDung> listNguoiDungExport = new ArrayList<>();
+            if (cboLocVaiTro.getSelectedIndex() != 0) {
+                VaiTro vaiTro = ((VaiTro) cboLocVaiTro.getSelectedItem());
+                listNguoiDungExport = nguoiDungService.selectAllByIdVaiTro(vaiTro.getMaVaitro());
+            } else {
+                listNguoiDungExport = nguoiDungService.selectAll();
+            }
+            JOptionPane.showMessageDialog(this, exportCustomersToExcel(listNguoiDungExport, selectedDirectoryPath + "\\temp.xlsx"));
+        } else {
+            System.out.println("Người dùng đã hủy bỏ việc chọn thư mục.");
+        }
     }
 
     public void loadVaiTroToComboBox() {
@@ -135,7 +165,14 @@ public class Form_4 extends javax.swing.JPanel {
     }
 
     public void addEntity() {
+
         NguoiDung nguoiDung = getObj();
+        
+        if (nguoiDungService.findByTenTaiKhoan(nguoiDung.getTenTaiKhoan()) != null) {
+            showMessageBox("Tên tài khoản đã tồn tại");
+            return;
+        }
+        
         if (nguoiDung != null) {
             showMessageBox(nguoiDungService.add(nguoiDung));
             loadNguoiDungToTable();
@@ -156,6 +193,43 @@ public class Form_4 extends javax.swing.JPanel {
                 break;
             }
         }
+    }
+
+    public String exportCustomersToExcel(List<NguoiDung> customerList, String filePath) {
+        System.out.println(customerList);
+        try (Workbook workbook = new XSSFWorkbook()) {
+            // Tạo một bảng tính mới
+            Sheet sheet = workbook.createSheet("Customer Data");
+
+            // Tạo hàng tiêu đề
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Mã người dùng", "Tên người dùng", "Số điẹn thoại", "Email"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
+
+            // Đổ dữ liệu từ danh sách khách hàng vào bảng tính
+            int rowNum = 1;
+            for (NguoiDung customer : customerList) {
+                Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(customer.getMaNguoiDung());
+                row.createCell(1).setCellValue(customer.getTenNguoiDung());
+                row.createCell(2).setCellValue(String.valueOf(customer.getSoDienThoai()));
+                row.createCell(3).setCellValue(customer.getEmail());
+            }
+
+            // Lưu tệp Excel
+            try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                workbook.write(fileOut);
+                System.out.println("Excel file exported successfully!");
+                return "Xuất file thành công!";
+            }
+
+        } catch (IOException e) {
+            System.out.println(e);;
+        }
+        return "Xuất file thất bại!";
     }
 
     public void deleteEntity() {
@@ -205,11 +279,7 @@ public class Form_4 extends javax.swing.JPanel {
             showMessageBox("Vui Lòng nhập matkhau");
             return null;
         }
-        if (nguoiDungService.findByTenTaiKhoan(tenTaiKhoan) != null) {
-            showMessageBox("Tên tài khoản đã tồn tại");
-            return null;
 
-        }
         return new NguoiDung(WIDTH, vaiTro.getMaVaitro(), tenNguoiDung, soDienThoai, email, tenTaiKhoan, matkhau);
     }
 
@@ -248,6 +318,7 @@ public class Form_4 extends javax.swing.JPanel {
         jButton5 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         pagination1 = new com.raven.component.Pagination();
+        jButton1 = new javax.swing.JButton();
 
         setBackground(new java.awt.Color(242, 242, 242));
 
@@ -470,6 +541,13 @@ public class Form_4 extends javax.swing.JPanel {
         pagination1.setBackground(new java.awt.Color(102, 102, 102));
         jPanel4.add(pagination1);
 
+        jButton1.setText("Xuất danh sách khách hàng");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -483,22 +561,25 @@ public class Form_4 extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(12, 12, 12)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 188, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 153, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap(12, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -547,6 +628,14 @@ public class Form_4 extends javax.swing.JPanel {
         loadDataToForm();
     }//GEN-LAST:event_tblNguoiDungMousePressed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        // Tạo một đối tượng JFileChooser
+        exportExcel();
+
+
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCapNhat;
@@ -555,6 +644,7 @@ public class Form_4 extends javax.swing.JPanel {
     private javax.swing.JButton btnXoa;
     private javax.swing.JComboBox<String> cboLocVaiTro;
     private javax.swing.JComboBox<String> cboVaiTro;
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

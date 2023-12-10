@@ -9,6 +9,7 @@ import com.raven.model.HeaderDetails;
 import com.raven.model.Product;
 import com.raven.model.ProductTableHeader;
 import com.raven.service.CodingErrorPdfInvoiceCreator;
+import java.io.File;
 /**
  *
  * @author phamh
@@ -30,19 +31,19 @@ public class Test {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        // Đặt ngày bắt đầu và ngày kết thúc
-        LocalDate startDate = LocalDate.of(2023, 1, 1);
-        LocalDate endDate = LocalDate.of(2023, 1, 10);
+        String filePath = ".....";
 
-        // Hiển thị các ngày trong khoảng
-        displayDatesInRange(startDate, endDate);
-    }
+        // Tạo một đối tượng File với đường dẫn đã cung cấp
+        File file = new File(filePath);
 
-    private static void displayDatesInRange(LocalDate startDate, LocalDate endDate) {
-        // Sử dụng vòng lặp for để duyệt qua các ngày trong khoảng
-        for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
-            System.out.println(date);
+        // Kiểm tra xem tệp có tồn tại hay không
+        if (file.exists()) {
+            System.out.println("Tệp tồn tại.");
+        } else {
+            System.out.println("Tệp không tồn tại.");
         }
     }
+
+  
 
 }

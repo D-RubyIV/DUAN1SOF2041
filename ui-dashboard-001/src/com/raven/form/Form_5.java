@@ -137,8 +137,8 @@ public class Form_5 extends javax.swing.JPanel {
         Date date1 = jdateChoseBegin1.getDate();
         Date date2 = jdateChoseEnd1.getDate();
         chart1.clear();
-        chart1.addLegend("Đã thanh toán", new Color(135, 189, 245));
-        chart1.addLegend("Hủy thanh toán", new Color(189, 135, 245));
+        chart1.addLegend("Hủy thanh toán", new Color(135, 189, 245));
+        chart1.addLegend("Đã Thanh toán", new Color(189, 135, 245));
         // By Thang
         List<DuLieuThongKeHoaDon> lieuThongKeHoaDons = duLieuThongKeService.selectAllHoaDonByDate(date1, date2);
         Collections.sort(lieuThongKeHoaDons, new Comparator<DuLieuThongKeHoaDon>() {
