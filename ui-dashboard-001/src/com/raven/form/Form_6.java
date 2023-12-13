@@ -12,6 +12,7 @@ import com.raven.service.VaitroService;
 import com.raven.style.PaginationItemRenderStyle1;
 import com.raven.entity.NguoiDung;
 import com.raven.entity.VaiTro;
+import com.raven.model.ModelMessage;
 import com.raven.service.EmailService;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -88,7 +89,7 @@ public class Form_6 extends javax.swing.JPanel {
                 map.put(i, listString);
                 i++;
             }
-
+            listEmail.clear();
             DefaultTableModel model = new DefaultTableModel();
             model.setColumnIdentifiers(new Object[]{"Mã người dùng", "Tên người dùng", "Số điện thoại", "Email", "Trạng thái"});
             for (Map.Entry<Integer, List<String>> entry : map.entrySet()) {
@@ -339,7 +340,8 @@ public class Form_6 extends javax.swing.JPanel {
         if (noiDung.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Vui lòng nhập nội dung");
         } else {
-            emailService.sendMail(listEmail, noiDung, fileLocation);
+            ModelMessage modelMessage = emailService.sendMail(listEmail, noiDung, fileLocation);
+            JOptionPane.showMessageDialog(this, modelMessage.getMessage());
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 

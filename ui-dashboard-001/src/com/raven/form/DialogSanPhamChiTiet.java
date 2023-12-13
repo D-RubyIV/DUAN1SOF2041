@@ -4,6 +4,13 @@
  */
 package com.raven.form;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.raven.component.EventPagination;
 import com.raven.service.ChatLieuService;
 import com.raven.service.HangService;
@@ -16,25 +23,45 @@ import com.raven.utils.XImage;
 import com.raven.entity.ChatLieu;
 import com.raven.entity.Hang;
 import com.raven.entity.MauSac;
+import com.raven.entity.NguoiDung;
 import com.raven.entity.SanPham;
 import com.raven.entity.SanPhamChiTiet;
 import com.raven.entity.Size;
+import com.raven.entity.VaiTro;
 import java.awt.Image;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Array;
 import java.text.DecimalFormat;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import javax.imageio.ImageIO;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFClientAnchor;
+import org.apache.poi.xssf.usermodel.XSSFDrawing;
+import org.apache.poi.xssf.usermodel.XSSFPicture;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
  *
@@ -79,25 +106,23 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
     }
 
     public String genSqlQueryAfterBoLoc(String baseSql) {
-        Hang locHang = ((Hang) cboLocHang.getSelectedItem());
-        ChatLieu locChatLieu = ((ChatLieu) cboLocChatLieu.getSelectedItem());
-        Size locSize = ((Size) cboLocSize.getSelectedItem());
-        MauSac locMauSac = ((MauSac) cboLocMau.getSelectedItem());
+
         System.out.println("==============================");
-        System.out.println("Bo Loc Hang     : " + locHang);
-        System.out.println("Bo Loc Chat Lieu: " + locChatLieu);
-        System.out.println("Bo Loc Size     : " + locSize);
-        System.out.println("Bo Loc Mau Sac  : " + locMauSac);
         System.out.println("==============================");
         int index = 0;
-        if (locHang != null) {
+        if (cboLocHang.getSelectedIndex() != 0) {
+            Hang locHang = ((Hang) cboLocHang.getSelectedItem());
+            System.out.println("Bo Loc Hang     : " + locHang);
+
             if (!baseSql.contains("WHERE")) {
                 baseSql += " WHERE (";
             }
             baseSql += String.format(" MAHANG = %s", locHang.getMaHang());
             index += 1;
         }
-        if (locChatLieu != null) {
+        if (cboLocChatLieu.getSelectedIndex() != 0) {
+            ChatLieu locChatLieu = ((ChatLieu) cboLocChatLieu.getSelectedItem());
+            System.out.println("Bo Loc Chat Lieu: " + locChatLieu);
             if (!baseSql.contains("WHERE")) {
                 baseSql += " WHERE (";
             }
@@ -107,7 +132,10 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             baseSql += String.format(" MACHATLIEU = %s", locChatLieu.getMaChatLieu());
             index += 1;
         }
-        if (locSize != null) {
+        if (cboLocSize.getSelectedIndex() != 0) {
+            Size locSize = ((Size) cboLocSize.getSelectedItem());
+            System.out.println("Bo Loc Size     : " + locSize);
+
             if (!baseSql.contains("WHERE")) {
                 baseSql += " WHERE (";
             }
@@ -117,7 +145,10 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             baseSql += String.format(" MASIZE = %s", locSize.getMaSize());
             index += 1;
         }
-        if (locMauSac != null) {
+        if (cboLocMau.getSelectedIndex() != 0) {
+            MauSac locMauSac = ((MauSac) cboLocMau.getSelectedItem());
+            System.out.println("Bo Loc Mau Sac  : " + locMauSac);
+
             if (!baseSql.contains("WHERE")) {
                 baseSql += " WHERE (";
             }
@@ -144,14 +175,117 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
 
     }
 
+    public String exportProductsToExcel(List<SanPhamChiTiet> listSanPhamChiTiets, String filePath) throws WriterException {
+        try (Workbook workbook = new XSSFWorkbook()) {
+            // Tạo một bảng tính mới
+            Sheet sheet = workbook.createSheet("Customer Data");
+
+            // Tạo hàng tiêu đề
+            Row headerRow = sheet.createRow(0);
+            String[] columns = {"Mã sản phầm chi tiết", "Tên sản phẩm", "Tên hãng", "Tên màu sắc", "Tên chất liệu", "Tên size", "Số lượng", "Giá"};
+            for (int i = 0; i < columns.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(columns[i]);
+            }
+
+            // Đổ dữ liệu từ danh sách khách hàng vào bảng tính
+            int rowNum = 1;
+            for (SanPhamChiTiet sanPhamChiTiet : listSanPhamChiTiets) {
+                Row row = sheet.createRow(rowNum++);
+                String tenSanPham = sanPhamService.findById(sanPhamChiTiet.getMaSanPham()).getTenSanPham();
+                String tenHang = hangService.findById(sanPhamChiTiet.getMaHang()).getTenHang();
+                String tenMauSac = mauSacService.findById(sanPhamChiTiet.getMaMauSac()).getTenMauSac();
+                String tenSize = sizeService.findById(sanPhamChiTiet.getMaSize()).getTenSize();
+                String tenChatLieu = chatLieuService.findById(sanPhamChiTiet.getMaChatLieu()).getTenChatLieu();
+
+                row.createCell(0).setCellValue(sanPhamChiTiet.getMaSanPhamChiTiet());
+                row.createCell(1).setCellValue(tenSanPham);
+                row.createCell(2).setCellValue(tenHang);
+                row.createCell(3).setCellValue(tenMauSac);
+                row.createCell(4).setCellValue(tenChatLieu);
+                row.createCell(5).setCellValue(tenSize);
+                row.createCell(6).setCellValue(String.valueOf(sanPhamChiTiet.getSoLuong()));
+                row.createCell(7).setCellValue(sanPhamChiTiet.getGiaSanPham());
+
+                String codeGenQR = String.format("HONIESNEAKERSPCT_%s", sanPhamChiTiet.getMaSanPhamChiTiet());
+                // The path where the image will get saved
+                String path = String.format("/HonieSneacker/QrCode/Product/QR%s.png", codeGenQR);
+                // Encoding charset
+                String charset = "UTF-8";
+                Map<EncodeHintType, ErrorCorrectionLevel> hashMap = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
+                hashMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+                createQR(codeGenQR, path, charset, hashMap, 200, 200);
+
+//                InputStream inputStream1 = new FileInputStream(path);
+//                byte[] inputImageBytes1 = IOUtils.toByteArray(inputStream1);
+//                int inputImagePictureID1 = workbook.addPicture(inputImageBytes1, Workbook.PICTURE_TYPE_PNG);
+//                XSSFDrawing drawing = (XSSFDrawing) sheet.createDrawingPatriarch();
+//                XSSFClientAnchor anchor = new XSSFClientAnchor();
+//
+//                anchor.setCol1(8); // Sets the column (0 based) of the first cell.
+//                anchor.setCol2(row.getRowNum()); // Sets the column (0 based) of the Second cell.
+//                anchor.setRow1(9); // Sets the row (0 based) of the first cell.
+//                anchor.setRow2(row.getRowNum() + 3); // Sets the row (0 based) of the Second cell.
+//
+//                XSSFPicture picture = drawing.createPicture(anchor, inputImagePictureID1);
+//                picture.resize(); // You may need to adjust the image size as needed
+                
+            }
+
+            // Lưu tệp Excel
+            try (FileOutputStream fileOut = new FileOutputStream(filePath)) {
+                workbook.write(fileOut);
+                System.out.println("Excel file exported successfully!");
+                return "Xuất file thành công!";
+            }
+
+        } catch (IOException e) {
+            System.out.println(e);;
+        }
+        return "Xuất file thất bại!";
+    }
+
+    public static void createQR(String data, String path, String charset, Map hashMap, int height, int width) throws WriterException, IOException {
+        BitMatrix matrix = new MultiFormatWriter().encode(
+                new String(data.getBytes(charset), charset),
+                BarcodeFormat.QR_CODE, width, height);
+        MatrixToImageWriter.writeToFile(
+                matrix,
+                path.substring(path.lastIndexOf('.') + 1),
+                new File(path));
+    }
+
+    public void exportExcel() {
+        JFileChooser fileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+        // Chỉ cho phép chọn thư mục, không chọn file
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+        // Hiển thị hộp thoại chọn thư mục và kiểm tra xem người dùng đã chọn thư mục hay không
+        int returnValue = fileChooser.showDialog(null, "Chọn thư mục");
+
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            try {
+                // Lấy đường dẫn của thư mục được chọn
+                String selectedDirectoryPath = fileChooser.getSelectedFile().getAbsolutePath();
+                System.out.println("Đường dẫn thư mục đã chọn: " + selectedDirectoryPath + "\\temp.xlsx");
+                List<SanPhamChiTiet> listSanPhamChiTiets = sanPhamChiTietService.selectAllByMaSanPham(GLOBAL_MA_SANPHAM);
+                JOptionPane.showMessageDialog(this, exportProductsToExcel(listSanPhamChiTiets, selectedDirectoryPath + "\\SPCT.xlsx"));
+            } catch (WriterException ex) {
+                Logger.getLogger(DialogSanPhamChiTiet.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            System.out.println("Người dùng đã hủy bỏ việc chọn thư mục.");
+        }
+    }
+
     public void init_LoadSanPhamChiTietToTabble() {
         String searchText = txtTimKiem.getText();
-        Hang locHang = ((Hang) cboLocHang.getSelectedItem());
-        ChatLieu locChatLieu = ((ChatLieu) cboLocChatLieu.getSelectedItem());
-        Size locSize = ((Size) cboLocSize.getSelectedItem());
-        MauSac locMauSac = ((MauSac) cboLocMau.getSelectedItem());
+//        Hang locHang = ((Hang) cboLocHang.getSelectedItem());
+//        ChatLieu locChatLieu = ((ChatLieu) cboLocChatLieu.getSelectedItem());
+//        Size locSize = ((Size) cboLocSize.getSelectedItem());
+//        MauSac locMauSac = ((MauSac) cboLocMau.getSelectedItem());
         // By Bo Loc
-        if (locHang != null || locChatLieu != null || locSize != null || locMauSac != null) {
+        if (cboLocHang.getSelectedIndex() != 0 || cboChatLieu.getSelectedIndex() != 0 || cboSize.getSelectedIndex() != 0 || cboMauSac.getSelectedIndex() != 0) {
             Object[] result = getListSPCTByBoLoc();
             listSanPhamChiTiet = (List<SanPhamChiTiet>) result[0];
             int totalItem = (int) result[1];
@@ -173,28 +307,29 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
                     + "OR tenHang LIKE N'%" + textSearch + "%' "
                     + "OR tenMauSac LIKE N'%" + textSearch + "%') "
                     + "AND SanPhamChiTiet.MASANPHAM = " + GLOBAL_MA_SANPHAM;
-            Hang locHangSearch = ((Hang) cboLocHang.getSelectedItem());
-            ChatLieu locChatLieuSearch = ((ChatLieu) cboLocChatLieu.getSelectedItem());
-            Size locSizeSearch = ((Size) cboLocSize.getSelectedItem());
-            MauSac locMauSacSearch = ((MauSac) cboLocMau.getSelectedItem());
+
             System.out.println("==============================");
-            System.out.println("Bo Loc Hang     : " + locHangSearch);
-            System.out.println("Bo Loc Chat Lieu: " + locChatLieuSearch);
-            System.out.println("Bo Loc Size     : " + locSizeSearch);
-            System.out.println("Bo Loc Mau Sac  : " + locMauSacSearch);
+            if (cboLocHang.getSelectedIndex() != 0) {
+                Hang locHangSearch = ((Hang) cboLocHang.getSelectedItem());
+                System.out.println("Bo Loc Hang     : " + locHangSearch);
+                baseSql += String.format(" AND SanPhamChiTiet.MAHANG = %s", locHangSearch.getMaHang());
+            }
+            if (cboLocChatLieu.getSelectedIndex() != 0) {
+                ChatLieu locChatLieuSearch = ((ChatLieu) cboLocChatLieu.getSelectedItem());
+                System.out.println("Bo Loc Chat Lieu: " + locChatLieuSearch);
+                baseSql += String.format(" AND SanPhamChiTiet.MACHATLIEU = %s", locChatLieuSearch.getMaChatLieu());
+            }
+            if (cboLocSize.getSelectedIndex() != 0) {
+                Size locSizeSearch = ((Size) cboLocSize.getSelectedItem());
+                System.out.println("Bo Loc Size     : " + locSizeSearch);
+                baseSql += String.format(" AND SanPhamChiTiet.MASIZE = %s", locSizeSearch.getMaSize());
+            }
+            if (cboLocMau.getSelectedIndex() != 0) {
+                MauSac locMauSacSearch = ((MauSac) cboLocMau.getSelectedItem());
+                System.out.println("Bo Loc Mau Sac  : " + locMauSacSearch);
+                baseSql += String.format(" AND SanPhamChiTiet.MAMAUSAC = %s", locMauSacSearch.getMaMauSac());
+            }
             System.out.println("==============================");
-            if (locHangSearch != null) {
-                baseSql += String.format(" AND SanPhamChiTiet.MAHANG = %s", locHang.getMaHang());
-            }
-            if (locChatLieuSearch != null) {
-                baseSql += String.format(" AND SanPhamChiTiet.MACHATLIEU = %s", locChatLieu.getMaChatLieu());
-            }
-            if (locSizeSearch != null) {
-                baseSql += String.format(" AND SanPhamChiTiet.MASIZE = %s", locSize.getMaSize());
-            }
-            if (locMauSacSearch != null) {
-                baseSql += String.format(" AND SanPhamChiTiet.MAMAUSAC = %s", locMauSac.getMaMauSac());
-            }
 
             System.out.println(baseSql);
             int totalItem = sanPhamChiTietService.selectAllByCustomSql(baseSql).size();
@@ -204,7 +339,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             listSanPhamChiTiet = sanPhamChiTietService.selectAllByCustomSql(baseSql);
 
         }
-        if (locHang == null && locChatLieu == null && locSize == null && locMauSac == null && searchText.isEmpty()) {
+        if (cboLocHang.getSelectedIndex() == 0 && cboLocChatLieu.getSelectedIndex() == 0 && cboLocSize.getSelectedIndex() == 0 && cboLocMau.getSelectedIndex() == 0 && searchText.isEmpty()) {
             // Nguyen Mau
             pagination1.setPagegination(INDEX_SELECT_PAGE_SPCT, (int) Math.ceil((float) sanPhamChiTietService.selectAllByMaSanPham(GLOBAL_MA_SANPHAM).size() / CONFIG_LIMIT_DATA_PAGE));
             listSanPhamChiTiet = sanPhamChiTietService.selectAllFromAToB(CONFIG_LIMIT_DATA_PAGE * (INDEX_SELECT_PAGE_SPCT - 1), CONFIG_LIMIT_DATA_PAGE, GLOBAL_MA_SANPHAM);
@@ -216,7 +351,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
     public void loadComboBoxBoLoc() {
         List<Hang> listBoLocHang = hangService.selectAll();
         DefaultComboBoxModel modelCboLocHang = new DefaultComboBoxModel();
-        modelCboLocHang.addElement(null);
+        modelCboLocHang.addElement("Tất cả");
         for (Hang hang : listBoLocHang) {
             modelCboLocHang.addElement(hang);
         }
@@ -224,7 +359,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
 
         List<ChatLieu> listBoLocChatLieu = chatLieuService.selectAll();
         DefaultComboBoxModel modelCboLocChatLieu = new DefaultComboBoxModel();
-        modelCboLocChatLieu.addElement(null);
+        modelCboLocChatLieu.addElement("Tất cả");
         for (ChatLieu chatLieu : listBoLocChatLieu) {
             modelCboLocChatLieu.addElement(chatLieu);
         }
@@ -232,7 +367,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
 
         List<MauSac> listBoLocMauSac = mauSacService.selectAll();
         DefaultComboBoxModel modelCboLocMauSac = new DefaultComboBoxModel();
-        modelCboLocMauSac.addElement(null);
+        modelCboLocMauSac.addElement("Tất cả");
         for (MauSac mauSac : listBoLocMauSac) {
             modelCboLocMauSac.addElement(mauSac);
         }
@@ -240,7 +375,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
 
         List<Size> listBoLocSize = sizeService.selectAll();
         DefaultComboBoxModel modelCboLocSize = new DefaultComboBoxModel();
-        modelCboLocSize.addElement(null);
+        modelCboLocSize.addElement("Tất cả");
         for (Size size : listBoLocSize) {
             modelCboLocSize.addElement(size);
         }
@@ -527,7 +662,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
         btnAddTab1 = new javax.swing.JButton();
         btnUpdateTab1 = new javax.swing.JButton();
         btnClearTab1 = new javax.swing.JButton();
-        btnDeleteTab1 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -636,7 +771,6 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Hãng"));
 
-        cboLocHang.setFont(new java.awt.Font("Segoe UI", 0, 10)); // NOI18N
         cboLocHang.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         cboLocHang.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -831,13 +965,6 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             }
         });
 
-        btnDeleteTab1.setText("Xóa");
-        btnDeleteTab1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDeleteTab1ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -884,12 +1011,11 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnAddTab1)
                     .addComponent(btnUpdateTab1)
-                    .addComponent(btnDeleteTab1)
                     .addComponent(btnClearTab1))
                 .addGap(8, 8, 8))
         );
 
-        jPanel5Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAddTab1, btnClearTab1, btnDeleteTab1, btnUpdateTab1});
+        jPanel5Layout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {btnAddTab1, btnClearTab1, btnUpdateTab1});
 
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -932,15 +1058,19 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
                             .addComponent(btnUpdateTab1))
                         .addGap(11, 11, 11)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(btnDeleteTab1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnClearTab1))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnClearTab1))
                         .addGap(7, 7, 7)))
                 .addGap(0, 8, Short.MAX_VALUE))
             .addComponent(lbImage, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
+
+        jButton5.setText("Xuất danh sách excel");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -949,6 +1079,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
@@ -968,10 +1099,12 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
                     .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton5)
+                .addGap(7, 7, 7))
         );
 
         pack();
@@ -1035,11 +1168,6 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_tblBangSanPhamChiTietKeyPressed
 
-    private void btnDeleteTab1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteTab1ActionPerformed
-        // TODO add your handling code here:
-        deleteSanPhamChiTiet();
-    }//GEN-LAST:event_btnDeleteTab1ActionPerformed
-
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         OpenDialogThuocTinh("Màu Sắc");
@@ -1096,6 +1224,11 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
         init_LoadSanPhamChiTietToTabble();
     }//GEN-LAST:event_cboLocSizeItemStateChanged
 
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        exportExcel();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1103,7 +1236,6 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAddTab1;
     private javax.swing.JButton btnClearTab1;
-    private javax.swing.JButton btnDeleteTab1;
     private javax.swing.JButton btnUpdateTab1;
     private javax.swing.JComboBox<String> cboChatLieu;
     private javax.swing.JComboBox<String> cboHang;
@@ -1118,6 +1250,7 @@ public class DialogSanPhamChiTiet extends javax.swing.JDialog {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

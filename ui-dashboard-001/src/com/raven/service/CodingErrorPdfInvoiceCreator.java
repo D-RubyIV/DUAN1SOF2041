@@ -45,7 +45,7 @@ public class CodingErrorPdfInvoiceCreator {
     float twocol = 285f;
     float twocol150 = twocol + 150f;
     float twocolumnWidth[] = {twocol150, twocol};
-    float sevenColumnWidth[] = {threecol, threecol, threecol, threecol, threecol, threecol, threecol};
+    float sevenColumnWidth[] = {285f, threecol, threecol, threecol, threecol, threecol, threecol};
     float fullwidth[] = {threecol * 3};
     public static final String BODONIBLACK = "fonts/vuArial.ttf";
 
@@ -78,25 +78,41 @@ public class CodingErrorPdfInvoiceCreator {
         document.close();
     }
 
-    public static String removeAccent(String input) {
-        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD);
-        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
-        System.out.println(pattern.matcher(normalized).replaceAll("").toLowerCase());
-        return pattern.matcher(normalized).replaceAll("");
+    public static String removeAccent(String inputStr) {
+        String s1 = "ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚÝàáâãèéêìíòóôõùúýĂăĐđĨĩŨũƠơƯưẠạẢảẤấẦầẨẩẪẫẬậẮắẰằẲẳẴẵẶặẸẹẺẻẼẽẾếỀềỂểỄễỆệỈỉỊịỌọỎỏỐốỒồỔổỖỗỘộỚớỜờỞởỠỡỢợỤụỦủỨứỪừỬửỮữỰựỲỳỴỵỶỷỸỹ";
+        String s0 = "AAAAEEEIIOOOOUUYaaaaeeeiioooouuyAaDdIiUuOoUuAaAaAaAaAaAaAaAaAaAaAaAaEeEeEeEeEeEeEeEeIiIiOoOoOoOoOoOoOoOoOoOoOoOoUuUuUuUuUuUuUuYyYyYyYy";
+
+        StringBuilder result = new StringBuilder();
+
+        for (int i = 0; i < inputStr.length(); i++) {
+            char c = inputStr.charAt(i);
+
+            int index = s1.indexOf(c);
+
+            if (index != -1) {
+                result.append(s0.charAt(index));
+            } else {
+                result.append(c);
+            }
+        }
+
+        return result.toString();
     }
 
     public void createProduct(List<Product> productList, String tienGiamGia) {
+        System.out.println(productList);
         float threecol = 190f;
         float fullwidth[] = {threecol * 3};
         Table threeColTable2 = new Table(sevenColumnWidth);
         float totalSum = getTotalSum(productList);
         for (Product product : productList) {
+            System.out.println(product);
             float total = product.getQuantity() * product.getPriceperpeice();
             threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getPname().orElse("")))).setBorder(Border.NO_BORDER)).setMarginLeft(10f);
-            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenHang()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
-            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenSize()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
-            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenChatLieu()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
-            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenMauSac()))).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenHang()))).setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER));
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenSize()))).setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER));
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenChatLieu()))).setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER));
+            threeColTable2.addCell(new Cell().add(String.valueOf(removeAccent(product.getTenMauSac()))).setTextAlignment(TextAlignment.LEFT).setBorder(Border.NO_BORDER));
             threeColTable2.addCell(new Cell().add(String.valueOf(product.getQuantity())).setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER));
             threeColTable2.addCell(new Cell().add(String.valueOf(total)).setTextAlignment(TextAlignment.RIGHT).setBorder(Border.NO_BORDER)).setMarginRight(15f);
         }

@@ -45,8 +45,7 @@ public class DialogSelectKhuyenMai extends javax.swing.JDialog {
         String searchText = txtSearch.getText().toLowerCase();
         if (searchText.isEmpty()) {
             listKhuyenMai = khuyenMaiService.selectAll();
-        }
-        else{
+        } else {
             String customSql = "SELECT * FROM KHUYENMAI"
                     + " WHERE MAKHUYENMAI LIKE N'%" + searchText + "%' "
                     + "OR TENKHUYENMAI LIKE N'%" + searchText + "%' ";
@@ -55,7 +54,7 @@ public class DialogSelectKhuyenMai extends javax.swing.JDialog {
         }
 
         DefaultTableModel model = new DefaultTableModel();
-        model.setColumnIdentifiers(new Object[]{"Mã khuyến mãi", "Tên khuyến mãi", "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái"});
+        model.setColumnIdentifiers(new Object[]{"Mã khuyến mãi", "Tên khuyến mãi", "Só tiền giẩm", "Só lượng", "Ngày bắt đầu", "Ngày kết thúc", "Trạng thái"});
         for (KhuyenMai khuyenMai : listKhuyenMai) {
             Date ngayHetHan = khuyenMai.getNgayKetThuc();
             System.out.println(ngayHetHan);
@@ -64,16 +63,16 @@ public class DialogSelectKhuyenMai extends javax.swing.JDialog {
             String trangThai = ngayHetHan.after(today) == true ? "Còn hạn" : "Hết hạn";
             System.out.println(trangThai);
             if (TRANGTHAI == 0) {
-                model.addRow(new Object[]{khuyenMai.getMaKhuyenMai(), khuyenMai.getTenKhuyenMai(), khuyenMai.getNgayBatDau(), khuyenMai.getNgayKetThuc(), trangThai});
+                model.addRow(new Object[]{khuyenMai.getMaKhuyenMai(), khuyenMai.getTenKhuyenMai(), khuyenMai.getMenhGia(), khuyenMai.getSoLuong(), khuyenMai.getNgayBatDau(), khuyenMai.getNgayKetThuc(), trangThai});
             } else {
                 int codeTrangThai = ngayHetHan.before(new Date()) ? 1 : 2;
                 if (TRANGTHAI == 1) {
-                    if (codeTrangThai == 1) {
-                        model.addRow(new Object[]{khuyenMai.getMaKhuyenMai(), khuyenMai.getTenKhuyenMai(), khuyenMai.getNgayBatDau(), khuyenMai.getNgayKetThuc(), trangThai});
+                    if (codeTrangThai == 2) {
+                        model.addRow(new Object[]{khuyenMai.getMaKhuyenMai(), khuyenMai.getTenKhuyenMai(), khuyenMai.getMenhGia(), khuyenMai.getSoLuong(), khuyenMai.getNgayBatDau(), khuyenMai.getNgayKetThuc(), trangThai});
                     }
                 } else {
-                    if (codeTrangThai == 2) {
-                        model.addRow(new Object[]{khuyenMai.getMaKhuyenMai(), khuyenMai.getTenKhuyenMai(), khuyenMai.getNgayBatDau(), khuyenMai.getNgayKetThuc(), trangThai});
+                    if (codeTrangThai == 1) {
+                        model.addRow(new Object[]{khuyenMai.getMaKhuyenMai(), khuyenMai.getTenKhuyenMai(), khuyenMai.getMenhGia(), khuyenMai.getSoLuong(), khuyenMai.getNgayBatDau(), khuyenMai.getNgayKetThuc(), trangThai});
                     }
                 }
             }
@@ -85,10 +84,12 @@ public class DialogSelectKhuyenMai extends javax.swing.JDialog {
         HoaDon hoaDon = hoaDonService.findById(GLOBAL_MAHOADON);
         String maKhuyenMaiSelect = tblKhuyenMai.getValueAt(tblKhuyenMai.getSelectedRow(), 0).toString();
         KhuyenMai khuyenMai = khuyenMaiService.findById(maKhuyenMaiSelect);
-        if (khuyenMai.getNgayKetThuc().after(new Date())) {
+        if (khuyenMai.getNgayKetThuc().after(new Date()) && khuyenMai.getSoLuong() > 0) {
             hoaDon.setMaGiamGia(maKhuyenMaiSelect);
             JOptionPane.showMessageDialog(this, hoaDonService.updateMaKhuyeMai(hoaDon));
             this.dispose();
+        } else if (khuyenMai.getSoLuong() == 0) {
+            JOptionPane.showMessageDialog(this, "Khuyến mãi đã hết lượt dùng");
         } else {
             JOptionPane.showMessageDialog(this, "Khuyến mãi này đã hết hạn");
         }

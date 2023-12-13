@@ -31,17 +31,11 @@ public class Test {
 
     public static void main(String[] args) throws FileNotFoundException {
 
-        String filePath = ".....";
+        String filePath = "HONIESNEAKERSPCT_14";
+        System.out.println(filePath.split("_")[1]);
+        System.out.println(filePath.contains("SPCT"));
 
-        // Tạo một đối tượng File với đường dẫn đã cung cấp
-        File file = new File(filePath);
-
-        // Kiểm tra xem tệp có tồn tại hay không
-        if (file.exists()) {
-            System.out.println("Tệp tồn tại.");
-        } else {
-            System.out.println("Tệp không tồn tại.");
-        }
+       
     }
 
   

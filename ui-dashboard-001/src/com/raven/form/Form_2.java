@@ -100,7 +100,7 @@ public class Form_2 extends javax.swing.JPanel {
             String tenSize = sizeService.findById(sanPhamChiTiet.getMaSize()).getTenSize();
             String tenChatLieu = chatLieuService.findById(sanPhamChiTiet.getMaChatLieu()).getTenChatLieu();
             String thanhTien = String.valueOf(hoaDonChiTiet.getSoLuong() * sanPhamChiTiet.getGiaSanPham());
-            model.addRow(new Object[]{index, maSanPhamChiTiet, tenSanPham, tenHang, tenMauSac, tenSize, tenChatLieu, sanPhamChiTiet.getSoLuong(), sanPhamChiTiet.getGiaSanPham(), thanhTien});
+            model.addRow(new Object[]{index, maSanPhamChiTiet, tenSanPham, tenHang, tenMauSac, tenSize, tenChatLieu, hoaDonChiTiet.getSoLuong(), sanPhamChiTiet.getGiaSanPham(), thanhTien});
         }
         tblHoaDonChiTiet.setModel(model);
     }
@@ -162,10 +162,10 @@ public class Form_2 extends javax.swing.JPanel {
                     SanPham sanPham = sanPhamService.findById(sanPhamChiTiet.getMaSanPham());
                     float thanhTien = Float.valueOf(hoaDonChiTiet.getSoLuong() * (float) sanPhamChiTiet.getGiaSanPham());
                     String moTa = String.format("Hang: %s, Mau Sac: %s, Size: %s, ChatLieu: %s", hang.getTenHang(), chatLieu.getTenChatLieu(), size.getTenSize(), mauSac.getTenMauSac());
-                    productList.add(new Product(sanPham.getTenSanPham(), hang.getTenHang(), size.getTenSize(), chatLieu.getTenChatLieu(), mauSac.getTenMauSac(), sanPhamChiTiet.getSoLuong(), thanhTien));
+                    productList.add(new Product(sanPham.getTenSanPham(), hang.getTenHang(), size.getTenSize(), chatLieu.getTenChatLieu(), mauSac.getTenMauSac(), hoaDonChiTiet.getSoLuong(), thanhTien));
                 }
-
-                productList = cepdf.modifyProductList(productList);
+                System.out.println("LIST PRODUCTS : " + productList);
+//                productList = cepdf.modifyProductList(productList);
                 float tienGiamGia = hoaDon.getTongTienGiamGia();
                 cepdf.createProduct(productList, String.valueOf(tienGiamGia));
                 //Product End

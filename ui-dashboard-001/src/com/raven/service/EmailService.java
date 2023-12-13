@@ -73,19 +73,19 @@ public class EmailService {
 
             Transport.send(message);
 
-            System.out.println("Email sent successfully");
-            ms.setMessage("Email sent successfully");
+            System.out.println("Gửi email hoàn tất");
+            ms.setMessage("Gửi email hoàn tất");
 
         } catch (MessagingException e) {
             if (e.getMessage().equals("Invalid Addresses")) {
-                ms.setMessage("Invalid email");
+                ms.setMessage("Email không hợp lệ");
             } else {
                 System.out.println(e);
-                ms.setMessage("Error");
+                ms.setMessage("Lỗi");
             }
         } catch (IOException ex) {
             System.out.println(ex);
-            ms.setMessage("Error");
+            ms.setMessage("Lỗi");
         }
         System.out.println(ms);
         return ms;

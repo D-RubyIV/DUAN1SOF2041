@@ -67,7 +67,7 @@ public class Form_4 extends javax.swing.JPanel {
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             // Lấy đường dẫn của thư mục được chọn
             String selectedDirectoryPath = fileChooser.getSelectedFile().getAbsolutePath();
-            System.out.println("Đường dẫn thư mục đã chọn: " + selectedDirectoryPath + "\\temp.xlsx");
+            System.out.println("Đường dẫn thư mục đã chọn: " + selectedDirectoryPath);
             List<NguoiDung> listNguoiDungExport = new ArrayList<>();
             if (cboLocVaiTro.getSelectedIndex() != 0) {
                 VaiTro vaiTro = ((VaiTro) cboLocVaiTro.getSelectedItem());
@@ -75,7 +75,7 @@ public class Form_4 extends javax.swing.JPanel {
             } else {
                 listNguoiDungExport = nguoiDungService.selectAll();
             }
-            JOptionPane.showMessageDialog(this, exportCustomersToExcel(listNguoiDungExport, selectedDirectoryPath + "\\temp.xlsx"));
+            JOptionPane.showMessageDialog(this, exportCustomersToExcel(listNguoiDungExport, selectedDirectoryPath + "\\DSKH.xlsx"));
         } else {
             System.out.println("Người dùng đã hủy bỏ việc chọn thư mục.");
         }
